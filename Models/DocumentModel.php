@@ -1,0 +1,952 @@
+<?php
+
+class DocumentModel extends Mysql
+{
+
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	public function getDocument($amc)
+	{
+
+		$document = "SELECT 
+						DPV_NUMERO, 
+						DPV_PVD_CODIGO, 
+						PVD_NOMBRE, 
+						DPV_FECHA, 
+						ROUND(SUM(UGR_PESO*MPR_CANTIDAD*MPR_CANTXUND*MPR_ACTIVO) / 1000,2) AS DPV_PESO, 
+						OPE_NOMBRE, 
+						DPV_SCS_CODIGO, 
+						DPV_CERRADO,
+						IFNULL(INICIO,'00:00:00') AS INICIO,
+						IFNULL(FIN,'00:00:00') AS FIN,
+						IFNULL(DURACION,'0 Min') AS DURACION  
+					FROM ADN_DOCPRO 
+						JOIN  ADN_PROVEEDORES ON DPV_PVD_CODIGO = PVD_CODIGO 
+						JOIN ADN_MOVPRO ON MPR_DPV_PVD_CODIGO = DPV_PVD_CODIGO 
+							AND MPR_DPV_TDT_CODIGO = DPV_TDT_CODIGO AND MPR_DPV_NUMERO = DPV_NUMERO 
+						JOIN ADN_UNDAGRU ON MPR_UPP_PDT_CODIGO = UGR_PDT_CODIGO
+							AND MPR_UPP_UND_ID = UGR_UND_ID 
+						JOIN SISTEMASADN.ADN_USUARIOS ON DPV_USUARIO = OPE_NUMERO
+						LEFT JOIN ( 
+						SELECT  
+							PDA_NUMERO,  
+							PDA_SCS_CODIGO,  
+							PDA_DET_CODIGO,  
+							MAX(PDA_TRANF_ID) AS PDA_TRANF_ID,
+							MIN(PDA_INICIO) AS INICIO, 
+							MAX(PDA_FIN) AS FIN,
+							CONCAT(ROUND(TIME_TO_SEC(TIMEDIFF(MAX(PDA_FIN),MIN(PDA_INICIO)))/60,2), ' Min') AS DURACION
+								FROM ADN_PESADAS 
+									WHERE PDA_TIPO = '1' 
+									AND PDA_INICIO <> '00:00:00' 
+								GROUP BY PDA_NUMERO,PDA_SCS_CODIGO, PDA_DET_CODIGO 
+					) AS PESADAS ON DPV_NUMERO = PDA_NUMERO AND DPV_PVD_CODIGO = PDA_DET_CODIGO AND DPV_SCS_CODIGO = PDA_SCS_CODIGO 
+					WHERE DPV_TDT_CODIGO = 'ODC' 
+						AND DPV_ACTIVO = '1'
+						AND MPR_AMC_CODIGO = '$amc'	
+						GROUP BY PVD_CODIGO, DPV_NUMERO, DPV_SCS_CODIGO
+						ORDER BY DPV_FECHAHORA DESC";
+
+		$select = $this->select_all($document);
+
+		return $select;
+	}
+
+	public function getDetails($number, $proveedor, $amc)
+	{
+
+
+
+
+		$details = "SELECT 
+		PROVEEDORES.PVDNOMBRE AS PVD_NOMBRE,
+		PDT_PESO_BALANZA,
+		MPR_DPV_NUMERO, 
+		MPR_DPV_PVD_CODIGO,
+		MPR_DESCRI, 
+		MPR_UPP_PDT_CODIGO,
+		MPR_UPP_UND_ID,  
+		
+		ROUND(		
+		IF(PDT_PESO_BALANZA=0 AND PDT_LICLTSCAJA >=1 AND UGR_UND_ID IN ('UND','KG'),(SUM(MPR_CANTIDAD/PDT_LICLTSCAJA)),
+		IF( PDT_PESO_BALANZA=1 AND PDT_LICLTSCAJA >=1 AND UGR_UND_ID IN ('UND','KG'),  (SUM(MPR_PIEZAS/PDT_LICLTSCAJA)),0))	
+		,0) AS CAJA,
+		
+		ROUND(IFNULL(CASE  
+			WHEN PDT_LICLTSCAJA =0 AND UGR_UND_ID = 'UND' THEN SUM(MPR_CANTIDAD)
+			WHEN PDT_LICLTSCAJA >= 0 AND UGR_UND_ID = 'KG' THEN SUM(MPR_CANTIDAD)
+		END,0),2) AS UND_KG   ,
+		IFNULL(IF(DPV_CERRADO='',0,DPV_CERRADO),0) AS DPV_CERRADO,
+		PDT_LICLTSCAJA,
+		UGR_UND_ID,
+		IFNULL(PESADO.PESADO,0) AS PESADO,
+		SUM(MPR_PIEZAS) AS PIEZAS
+		FROM ADN_MOVPRO 
+		JOIN ADN_DOCPRO ON MPR_DPV_NUMERO = DPV_NUMERO 
+			AND MPR_DPV_TDT_CODIGO = DPV_TDT_CODIGO
+			AND MPR_DPV_TIPTRA = DPV_TIPTRA 
+			AND MPR_DPV_PVD_CODIGO = DPV_PVD_CODIGO 
+			AND MPR_DPV_SCS_CODIGO = DPV_SCS_CODIGO
+		JOIN ADN_PRODUCTOS ON MPR_UPP_PDT_CODIGO = PDT_CODIGO 
+		JOIN `adn_undagru` ON MPR_UPP_PDT_CODIGO = UGR_PDT_CODIGO 
+			AND MPR_UPP_UND_ID = UGR_UND_ID
+			JOIN 
+		(SELECT PVD_CODIGO AS PVDCODIGO, PVD_NOMBRE AS PVDNOMBRE FROM ADN_PROVEEDORES) AS PROVEEDORES
+		ON PROVEEDORES.PVDCODIGO = MPR_DPV_PVD_CODIGO	
+		LEFT JOIN (
+			 SELECT 
+				PDA_NUMERO, 
+				PDA_DET_CODIGO, 
+				PDA_UPP_PDT_CODIGO, 
+				PDA_UPP_UND_ID, 
+				IFNULL(ROUND(SUM( IF(PDA_CANXUND >= 1 AND PDA_UPP_UND_ID = 'UND', (PDA_CANTIDAD-PDA_EXTRA)/PDA_CANXUND, PDA_CANTIDAD-PDA_EXTRA)),2),0) AS PESADO 
+			FROM ADN_PESADAS 
+				WHERE PDA_NUMERO = '$number' 
+				AND PDA_DET_CODIGO = '$proveedor' 
+				AND PDA_TIPO = '1'
+				GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID
+			    
+			    ) AS PESADO ON PESADO.PDA_NUMERO = DPV_NUMERO AND PESADO.PDA_DET_CODIGO = DPV_PVD_CODIGO AND PESADO.PDA_UPP_PDT_CODIGO = MPR_UPP_PDT_CODIGO AND PESADO.PDA_UPP_UND_ID = MPR_UPP_UND_ID
+		
+		WHERE MPR_DPV_NUMERO = '$number' 
+		AND MPR_DPV_PVD_CODIGO = '$proveedor' 
+		AND MPR_DPV_TDT_CODIGO = 'ODC'
+		AND MPR_AMC_CODIGO = '$amc'	
+		GROUP BY MPR_UPP_PDT_CODIGO 
+		
+		UNION ALL
+		
+	SELECT 
+		'' AS PVD_NOMBRE, 
+		PDT_PESO_BALANZA,
+		PEX_NUMERO AS MPR_DPV_NUMERO , 
+		PEX_DET_CODIGO AS MPR_DPV_PVD_CODIGO ,
+		PDT_DESCRIPCION AS MPR_DESCRI, 
+		PEX_UPP_PDT_CODIGO AS MPR_UPP_PDT_CODIGO,
+		PEX_UPP_UND_ID AS MPR_UPP_UND_ID,  
+		
+		ROUND(IF(PEX_CANXUND >=1 AND PEX_UPP_UND_ID IN ('UND','KG'),  (SUM(PEX_CANTIDAD/PEX_CANXUND)),0 ),2) AS CAJA,
+		ROUND(IFNULL(CASE  
+			WHEN PEX_CANXUND =0 AND PEX_UPP_UND_ID = 'UND' THEN SUM(PEX_CANTIDAD)
+			WHEN PEX_CANXUND >= 0 AND PEX_UPP_UND_ID = 'KG' THEN SUM(PEX_CANTIDAD)
+		END,0),2) AS UND_KG   ,
+		CERRADO AS DPV_CERRADO,
+		PEX_CANXUND AS PDT_LICLTSCAJA,
+		PEX_UPP_UND_ID,
+		IFNULL(PESADO.PESADO,0) AS PESADO,
+		0 AS PIEZAS
+		FROM ADN_PESADAS_EXTRA
+		JOIN ADN_PRODUCTOS ON PEX_UPP_PDT_CODIGO = PDT_CODIGO
+		JOIN 
+		   (SELECT DPV_NUMERO AS NUMERO, DPV_PVD_CODIGO AS PROVEEDOR,DPV_CERRADO AS CERRADO FROM ADN_DOCPRO 
+		     WHERE DPV_NUMERO ='$number' 
+		     AND DPV_PVD_CODIGO= '$proveedor' 
+		     AND DPV_TDT_CODIGO = 'ODC') AS ESTADO
+		ON ESTADO.NUMERO = PEX_NUMERO AND ESTADO.PROVEEDOR = PEX_DET_CODIGO
+		LEFT JOIN 
+		        (
+			 SELECT 
+				PDA_NUMERO, 
+				PDA_DET_CODIGO, 
+				PDA_UPP_PDT_CODIGO, 
+				PDA_UPP_UND_ID, 
+				IFNULL(ROUND(SUM( IF(PDA_CANXUND >= 1 AND PDA_UPP_UND_ID = 'UND', (PDA_CANTIDAD-PDA_EXTRA)/PDA_CANXUND, PDA_CANTIDAD-PDA_EXTRA)),2),0) AS PESADO 
+			FROM ADN_PESADAS 
+				WHERE PDA_NUMERO = '$number' 
+				AND PDA_DET_CODIGO = '$proveedor' 
+				AND PDA_TIPO = '1'
+				GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID
+			    
+			    ) AS PESADO ON PESADO.PDA_NUMERO = PEX_NUMERO AND PESADO.PDA_DET_CODIGO = PEX_DET_CODIGO AND PESADO.PDA_UPP_PDT_CODIGO = PEX_UPP_PDT_CODIGO AND PESADO.PDA_UPP_UND_ID = PEX_UPP_UND_ID
+	WHERE PEX_TIPO = '1' 
+		AND PEX_NUMERO = '$number' 
+		AND PEX_DET_CODIGO = '$proveedor'
+	GROUP BY PEX_NUMERO, PEX_SCS_CODIGO, PEX_DET_CODIGO, PEX_UPP_PDT_CODIGO;  ";
+
+		//dep($details);
+
+		$select = $this->select_all($details);
+
+		return $select;
+	}
+
+	public function copy($id, $pv)
+	{
+
+		$queryDoc = "INSERT INTO `pesadas`.`adn_docpro` (`DPV_NUMERO`,`DPV_PVD_CODIGO`,`DPV_SCS_CODIGO`,`DPV_TDT_CODIGO`,`DPV_FECHA`,`DPV_NETO`,`DPV_BASEG`,`DPV_BASER`,`DPV_EXENTO`,`DPV_ACTIVO`,`DPV_STD_ESTADO`,`DPV_PORDCTO`,`DPV_FECHAHORA`,`DPV_HORA`,`DPV_NUMFIS`,`DPV_PLAZO`,`DPV_CONDICION`,`DPV_IVAG`,`DPV_IVAR`,`DPV_ID`,`DPV_ORDEN`,`DPV_DESCRIPCION`,`DPV_PORCENTAJE`,`DPV_TIPTRA`,`DPV_FACAFE`,`DPV_TIPOINV`,`DPV_CXP`,`DPV_BRUTO`,`DPV_FECHAVEN`,`DPV_NUMORIGEN`,`DPV_PRORRATEA`,`DPV_NUMAUX`,`DPV_VALORCAM`,`DPV_BRUTOUSD`,`DPV_NETOUSD`,`DPV_BASEGUSD`,`DPV_BASERUSD`,`DPV_BASESUSD`,`DPV_EXENTOUSD`,`DPV_IVAGUSD`,`DPV_IVARUSD`,`DPV_IVASUSD`,`DPV_VALORCAM2`,`DPV_MONEDA`,`DPV_IGTF`,`DPV_COMPENSACION`)
+		   SELECT `DPV_NUMERO`,`DPV_PVD_CODIGO`,`DPV_SCS_CODIGO`,`DPV_TDT_CODIGO`,`DPV_FECHA`,`DPV_NETO`,`DPV_BASEG`,`DPV_BASER`,`DPV_EXENTO`,`DPV_ACTIVO`,`DPV_STD_ESTADO`,`DPV_PORDCTO`,`DPV_FECHAHORA`,`DPV_HORA`,`DPV_NUMFIS`,`DPV_PLAZO`,`DPV_CONDICION`,`DPV_IVAG`,`DPV_IVAR`,`DPV_ID`,`DPV_ORDEN`,`DPV_DESCRIPCION`,`DPV_PORCENTAJE`,`DPV_TIPTRA`,`DPV_FACAFE`,`DPV_TIPOINV`,`DPV_CXP`,`DPV_BRUTO`,`DPV_FECHAVEN`,`DPV_NUMORIGEN`,`DPV_PRORRATEA`,`DPV_NUMAUX`,`DPV_VALORCAM`,`DPV_BRUTOUSD`,`DPV_NETOUSD`,`DPV_BASEGUSD`,`DPV_BASERUSD`,`DPV_BASESUSD`,`DPV_EXENTOUSD`,`DPV_IVAGUSD`,`DPV_IVARUSD`,`DPV_IVASUSD`,`DPV_VALORCAM2`,`DPV_MONEDA`,`DPV_IGTF`,DPV_COMPENSACION FROM ADN_DOCPRO WHERE DPV_TDT_CODIGO = 'PDA' AND DPV_ACTIVO = '1' AND DPV_NUMERO = '$id'; AND DPV_PVD_CODIGO = '$pv'";
+
+		$queryMov = "INSERT INTO `pesadas`.`adn_movpro` (`MPR_ID`,`MPR_DPV_NUMERO`,`MPR_AMC_CODIGO`,`MPR_DPV_PVD_CODIGO`,`MPR_DPV_SCS_CODIGO`,`MPR_DPV_TDT_CODIGO`,`MPR_UPP_PDT_CODIGO`,`MPR_UPP_UND_ID`,`MPR_CTR_CODIGO`,`MPR_CANTIDAD`,`MPR_COSTOT`,`MPR_COSTOP`,`MPR_FISICO`,`MPR_LOGICO`,`MPR_CONTABLE`,`MPR_ACTIVO`,`MPR_PORDCTO`,`MPR_CANTXUND`,`MPR_PORIVA`,`MPR_TIVACOD`,`MPR_HTI_ID`,`MPR_SALDOV`,`MPR_LOTE`,`MPR_FECHALOTE`,`MPR_PRECIOLOTE`,`MPR_DESCDCTO`,`MPR_COSTOBRUTO`,`MPR_PORDESC1`,`MPR_DESCRI`,`MPR_TIPCOSANT`,`MPR_COSANT`,`MPR_NUMORG`,`MPR_TIPOORG`,`MPR_EXPORT`,`MPR_CANTAUX`,`MPR_DPV_TIPTRA`,`MPR_COSTOUSD`,`MPR_AMPLIO`,`MPR_VALORCAM`,`MPR_PIEZAS`,`MPR_CANTRECIBIDA`,`MPR_COSTOTUSD`,`MPR_FECHAVEN`)
+	SELECT `MPR_ID`,`MPR_DPV_NUMERO`,`MPR_AMC_CODIGO`,`MPR_DPV_PVD_CODIGO`,`MPR_DPV_SCS_CODIGO`,`MPR_DPV_TDT_CODIGO`,`MPR_UPP_PDT_CODIGO`,`MPR_UPP_UND_ID`,`MPR_CTR_CODIGO`,`MPR_CANTIDAD`,`MPR_COSTOT`,`MPR_COSTOP`,`MPR_FISICO`,`MPR_LOGICO`,`MPR_CONTABLE`,`MPR_ACTIVO`,`MPR_PORDCTO`,`MPR_CANTXUND`,`MPR_PORIVA`,`MPR_TIVACOD`,`MPR_HTI_ID`,`MPR_SALDOV`,`MPR_LOTE`,`MPR_FECHALOTE`,`MPR_PRECIOLOTE`,`MPR_DESCDCTO`,`MPR_COSTOBRUTO`,`MPR_PORDESC1`,`MPR_DESCRI`,`MPR_TIPCOSANT`,`MPR_COSANT`,`MPR_NUMORG`,`MPR_TIPOORG`,`MPR_EXPORT`,`MPR_CANTAUX`,`MPR_DPV_TIPTRA`,`MPR_COSTOUSD`,`MPR_AMPLIO`,`MPR_VALORCAM`,`MPR_PIEZAS`,`MPR_CANTRECIBIDA`,`MPR_COSTOTUSD`,`MPR_FECHAVEN` FROM ADN_MOVPRO WHERE MPR_DPV_NUMERO = '$id' AND MPR_DPV_PVD_CODIGO = '$pv' AND MPR_DPV_TDT_CODIGO = 'PDA' AND MPR_ACTIVO = '1';";
+
+
+
+		$resultDoc = $this->select($queryDoc);
+		$resultMov = $this->select($queryMov);
+
+
+		return $resultDoc;
+	}
+
+
+	public function insertDetails($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta)
+	{
+		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
+
+		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'1');";
+		$result = $this->insert($insert, [$numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $user]);
+
+		return $result;
+	}
+
+
+	public function insertSkip($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $motivo)
+	{
+
+		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
+		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO,PDA_MOTIVO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'1',?);";
+		$result = $this->insert($insert, [$numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $user, $motivo]);
+		return $result;
+	}
+
+	public function updateDetails($id, $cantidad)
+	{
+
+		$query = "UPDATE adn_pesadas SET PDA_CANTIDAD = ? WHERE ID = '$id' ";
+
+
+
+		$update = $this->update($query, [$cantidad]);
+
+		return $update;
+	}
+
+	public function getCanasta()
+	{
+
+		$query = "SELECT * FROM adn_canasta_tipo";
+
+		$select = $this->select_all($query);
+
+
+		return $select;
+	}
+
+	public function getPesadas($numero, $proveedor, $sku)
+	{
+
+
+		$query = "SELECT `ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`, `PDA_AMC_DESTINO`, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`, `PDA_CANXUND`, `PDA_CANTIDAD`, `PDA_CANASTA_TIPO`, `PDA_CANASTA`, ROUND( `PDA_EXTRA`,2) AS PDA_EXTRA, `PDA_UBICA`, `PDA_FECHA`, `PDA_INICIO`, `PDA_FIN`, `PDA_LLEGADA`, `PDA_TK`, `PDA_TA`, `PDA_TRANF_ID`, `PDA_USUARIO`, `PDA_TIPO`,PDA_MOTIVO FROM adn_pesadas WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_UPP_PDT_CODIGO = '$sku' AND PDA_TIPO = '1' order by ID ASC";
+
+
+		$select = $this->select_all($query);
+
+		return $select;
+	}
+
+	public function deletePesadas($id, $cantidad)
+	{
+		$row = "SELECT * FROM ADN_PESADAS WHERE ID = '$id'";
+
+		$executeRow = $this->select($row);
+
+		$query = "UPDATE ADN_MOVPRO SET MPR_CANTRECIBIDA = (MPR_CANTRECIBIDA -  ? )   WHERE MPR_DPV_TDT_CODIGO = 'ODC' AND MPR_DPV_NUMERO = ? AND MPR_AMC_CODIGO = ?
+		AND MPR_DPV_SCS_CODIGO = ? AND MPR_DPV_PVD_CODIGO = ? AND MPR_UPP_PDT_CODIGO = ? AND MPR_UPP_UND_ID = ?
+		AND MPR_ACTIVO = '1' LIMIT 1";
+
+		$executeUpdate = $this->update($query, [$cantidad, $executeRow['PDA_NUMERO'], $executeRow['PDA_AMC_ORIGEN'], $executeRow['PDA_SCS_CODIGO'], $executeRow['PDA_DET_CODIGO'], $executeRow['PDA_UPP_PDT_CODIGO'], $executeRow['PDA_UPP_UND_ID']]);
+
+
+		$bridge = "DELETE FROM adn_pesadas_canastas WHERE PCT_PDA_ID = '$id'";
+
+		$deletebridge = $this->delete($bridge);
+
+		$query = "DELETE FROM adn_pesadas WHERE ID = '$id'";
+
+		$delete = $this->delete($query);
+
+		return $delete;
+	}
+
+	public function getDetailsToEdit($numero, $proveedor)
+	{
+
+		$query = "SELECT PDA_NUMERO,PDA_AMC_ORIGEN,PDA_AMC_DESTINO,PDA_SCS_CODIGO,PDA_DET_CODIGO,PDA_UPP_PDT_CODIGO,PDA_UPP_UND_ID, SUM(PDA_CANTIDAD) AS PDA_CANTIDAD  FROM adn_pesadas WHERE PDA_AMC_ORIGEN = '001' AND PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_TIPO = '1' GROUP BY PDA_UPP_PDT_CODIGO;";
+
+
+		$result = $this->select_all($query);
+
+		return $result;
+	}
+
+	public function receivedAmount($numero, $almacen, $sucursal, $proveedor, $producto, $unidad, $cantidad)
+	{
+
+		$query = "UPDATE ADN_MOVPRO SET MPR_CANTRECIBIDA = ? WHERE MPR_DPV_TDT_CODIGO = 'ODC' AND MPR_DPV_NUMERO = ? AND MPR_AMC_CODIGO = ?
+		AND MPR_DPV_SCS_CODIGO = ? AND MPR_DPV_PVD_CODIGO = ? AND MPR_UPP_PDT_CODIGO = ? AND MPR_UPP_UND_ID = ?
+		AND MPR_ACTIVO = '1' LIMIT 1";
+
+
+
+		$update = $this->update($query, [$cantidad, $numero, $almacen, $sucursal, $proveedor, $producto, $unidad]);
+
+		return $update;
+	}
+
+	public function searchWarrant($numero, $almacen, $sucursal, $proveedor)
+	{
+
+		$select = "SELECT *, IF(MPR_CANTIDAD <>MPR_CANTRECIBIDA,1,0) AS MERMA FROM ADN_MOVPRO WHERE MPR_DPV_TDT_CODIGO = 'ODC' 
+		    AND MPR_DPV_NUMERO = '$numero' AND MPR_AMC_CODIGO = '$almacen'
+			AND MPR_DPV_SCS_CODIGO = '$sucursal' AND MPR_DPV_PVD_CODIGO = '$proveedor' 
+			AND MPR_ACTIVO = '1' HAVING MERMA <>0";
+
+
+
+		$result = $this->select_all($select);
+		return $result;
+	}
+
+	public function validate($numero, $almacen, $sucursal, $proveedor)
+	{
+
+		/* SIN USO
+		$query = "SELECT  IF(MPR_CANTIDAD <>MPR_CANTRECIBIDA,1,0) AS MERMA, SUM(IF(MPR_CANTIDAD <> 0 AND MPR_CANTRECIBIDA = 0, 1,0)) AS VALIDA  FROM ADN_MOVPRO WHERE MPR_DPV_TDT_CODIGO = 'ODC' 
+   		AND MPR_DPV_NUMERO = '$numero' AND MPR_AMC_CODIGO = '$almacen'
+  		AND MPR_DPV_SCS_CODIGO = '$sucursal' AND MPR_DPV_PVD_CODIGO = '$proveedor' 
+		AND MPR_ACTIVO = '1' HAVING MERMA <>0";
+
+
+		$result = $this->select($query);
+
+
+		if (isset($result['VALIDA'])) {
+			$result = $result['VALIDA'];
+		} else {
+			$result = 0;
+		}
+
+		return $result;
+
+		*/
+	}
+
+	public function validateOdc($numero, $almacen, $sucursal, $proveedor)
+	{
+
+		$sql = "SELECT IF(PESADAS.CONTEO = (ODC.INDICE+IFNULL(EXTRA.INDICE,0)),1,0) AS VALIDATE
+					FROM (
+						SELECT PDA_NUMERO AS NUMERO,PDA_SCS_CODIGO AS SCS, PDA_DET_CODIGO AS DET,
+						ROW_NUMBER() OVER (ORDER BY PDA_UPP_PDT_CODIGO DESC) AS CONTEO  
+						FROM ADN_PESADAS
+						WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_TIPO = '1'
+						GROUP BY PDA_UPP_PDT_CODIGO LIMIT 1
+					) AS PESADAS
+					JOIN (
+						SELECT  
+							MPR_DPV_NUMERO,
+							MPR_DPV_PVD_CODIGO,
+							MPR_DPV_SCS_CODIGO,
+							ROW_NUMBER() OVER (ORDER BY MPR_UPP_PDT_CODIGO DESC) AS INDICE  
+								FROM ADN_MOVPRO 
+									WHERE MPR_DPV_NUMERO = '$numero' 
+									AND MPR_DPV_PVD_CODIGO = '$proveedor' 
+									AND MPR_DPV_SCS_CODIGO = '000001' 
+									AND MPR_DPV_TDT_CODIGO = 'ODC'
+									AND MPR_ACTIVO = '1'
+							GROUP BY  MPR_UPP_PDT_CODIGO LIMIT 1
+					) AS ODC ON NUMERO = ODC.MPR_DPV_NUMERO AND DET = ODC.MPR_DPV_PVD_CODIGO AND SCS = ODC.MPR_DPV_SCS_CODIGO
+					LEFT JOIN (
+
+					SELECT 
+					PEX_NUMERO AS MPR_DPV_NUMERO , 
+					PEX_DET_CODIGO AS MPR_DPV_PVD_CODIGO ,
+					PEX_SCS_CODIGO AS MPR_DPV_SCS_CODIGO, 
+					COUNT(*) AS INDICE
+						FROM ADN_PESADAS_EXTRA
+							WHERE PEX_NUMERO = '$numero' 
+							AND PEX_DET_CODIGO = '$proveedor' 
+							AND PEX_SCS_CODIGO = '000001' 
+							AND PEX_TIPO = '1'
+
+					) AS EXTRA ON NUMERO = EXTRA.MPR_DPV_NUMERO AND DET = EXTRA.MPR_DPV_PVD_CODIGO AND SCS = EXTRA.MPR_DPV_SCS_CODIGO;";
+
+		$result = $this->select($sql);
+
+		if (isset($result['VALIDATE'])) {
+			$result = $result['VALIDATE'];
+		} else {
+			$result = 0;
+		}
+
+		return $result;
+	}
+
+	public function createShrinkageDoc($numero, $almacen, $sucursal, $proveedor)
+	{
+
+
+		$docpro = "INSERT INTO ADN_DOCPRO( DPV_NUMERO, DPV_PVD_CODIGO, DPV_SCS_CODIGO,
+			DPV_TDT_CODIGO, DPV_FECHA, DPV_NETO, DPV_BASEG,
+			DPV_BASER, DPV_EXENTO, DPV_ACTIVO, DPV_STD_ESTADO,
+			DPV_PORDCTO, DPV_FECHAHORA, DPV_HORA, DPV_NUMFIS,
+			DPV_PLAZO, DPV_CONDICION, DPV_IVAG, DPV_IVAR,
+			DPV_ID, DPV_TIENERTI, DPV_CUENTA, DPV_DESCRIPCION,
+			DPV_PORCENTAJE, DPV_TIPTRA, DPV_CBTE, DPV_TIPOINV,
+			DPV_PORDCTO2, DPV_PORDCTO3, DPV_PORDCTO4, DPV_PORDCTO5,
+			DPV_MASOMENOSIVA, DPV_MASOMENOSEX, DPV_IVAMODIF, DPV_BASEMODIF,
+			DPV_FECHADEC, DPV_CXP, DPV_FACAFE, DPV_BRUTO, DPV_MMIVAG,
+			DPV_MMIVAR, DPV_MMIVAS, DPV_MMBASEG, DPV_MMBASER,
+			DPV_MMBASES, DPV_MMEXENTO, DPV_MMNETO, DPV_FECHAVEN,
+			DPV_NUMAUX, DPV_VALORCAM, DPV_FACTORC, DPV_CCT_CODIGO,
+			DPV_DEDUCIBLE, DPV_IP, DPV_ESTACION, DPV_USUARIO,
+			DPV_PAGOELECT, DPV_IVAELEC, DPV_GASTO, DPV_IMPOCONSUMO,
+			DPV_NETOUSD, DPV_BASEGUSD, DPV_BASERUSD, DPV_EXENTOUSD,
+			DPV_IVAGUSD, DPV_IVARUSD, DPV_IVASUSD )
+			
+			SELECT DPV_NUMERO, DPV_PVD_CODIGO, DPV_SCS_CODIGO,
+			'NCCI' AS DPV_TDT_CODIGO, DPV_FECHA, '0.00' AS DPV_NETO, '0.00' AS DPV_BASEG,
+			'0.00' AS DPV_BASER, '0.00' AS DPV_EXENTO, DPV_ACTIVO, DPV_STD_ESTADO,
+			DPV_PORDCTO, DPV_FECHAHORA, DPV_HORA, DPV_NUMFIS,
+			DPV_PLAZO, DPV_CONDICION, '0.00' AS DPV_IVAG,'0.00' AS DPV_IVAR,
+			NULL AS DPV_ID, DPV_TIENERTI, DPV_CUENTA, DPV_DESCRIPCION,
+			DPV_PORCENTAJE, DPV_TIPTRA, DPV_CBTE, 0 AS  DPV_TIPOINV,
+			DPV_PORDCTO2, DPV_PORDCTO3, DPV_PORDCTO4, DPV_PORDCTO5,
+			DPV_MASOMENOSIVA, DPV_MASOMENOSEX, DPV_IVAMODIF, DPV_BASEMODIF,
+			DPV_FECHADEC, DPV_CXP, CONCAT('ODC:',DPV_NUMERO) AS DPV_FACAFE, '0.00' AS DPV_BRUTO, DPV_MMIVAG,
+			DPV_MMIVAR, DPV_MMIVAS, DPV_MMBASEG, DPV_MMBASER,
+			DPV_MMBASES, DPV_MMEXENTO, DPV_MMNETO, DPV_FECHAVEN,
+			DPV_NUMAUX, DPV_VALORCAM, DPV_FACTORC, DPV_CCT_CODIGO,
+			DPV_DEDUCIBLE, DPV_IP, DPV_ESTACION, DPV_USUARIO,
+			DPV_PAGOELECT, DPV_IVAELEC, DPV_GASTO, DPV_IMPOCONSUMO,
+			'0.00' AS DPV_NETOUSD, '0.00' AS DPV_BASEGUSD, '0.00' AS DPV_BASERUSD, '0.00' AS DPV_EXENTOUSD,
+			'0.00' AS DPV_IVAGUSD, '0.00' AS DPV_IVARUSD, '0.00' AS DPV_IVASUSD
+			
+			FROM ADN_DOCPRO WHERE DPV_NUMERO = '$numero' AND DPV_PVD_CODIGO = '$proveedor' AND DPV_SCS_CODIGO = '$sucursal' AND DPV_TDT_CODIGO ='ODC'";
+
+
+		$executeDocpro = $this->select($docpro);
+
+		return $executeDocpro;
+	}
+
+	public function createShrinkage($numero, $almacen, $sucursal, $proveedor, $codigo, $cantidad, $unidad)
+	{
+
+		$mov = "INSERT INTO ADN_MOVPRO( MPR_DPV_NUMERO,
+               MPR_AMC_CODIGO,
+               MPR_DPV_PVD_CODIGO,
+               MPR_DPV_SCS_CODIGO,
+               MPR_DPV_TDT_CODIGO,
+               MPR_UPP_PDT_CODIGO,
+               MPR_UPP_UND_ID,
+               MPR_CTR_CODIGO,
+               MPR_CANTIDAD,
+               MPR_COSTOT,
+               MPR_COSTOP,
+               MPR_FISICO,
+               MPR_LOGICO,
+               MPR_CONTABLE,
+               MPR_ACTIVO,
+               MPR_PORDCTO,
+               MPR_CANTXUND,
+               MPR_PORIVA,
+               MPR_TIVACOD,
+               MPR_HTI_ID,
+               MPR_SALDOV,
+               MPR_COSTOBRUTO,
+               MPR_DESCDCTO,
+               MPR_PORDESC1,
+               MPR_PORDESC2,
+               MPR_PORDESC3,
+               MPR_PORDESC4,
+               MPR_PORDESC5,
+               MPR_GASTO,
+               MPR_DESCRI,
+               MPR_TIPCOSANT,
+               MPR_COSANT,
+               MPR_NUMORG,
+               MPR_TIPOORG,
+               MPR_LOTE,
+               MPR_FECHALOTE,
+               MPR_PRECIOLOTE,
+               MPR_CANTAUX,
+               MPR_COSTOUSD,
+               MPR_AMPLIO,
+			   MPR_PIEZAS,
+			   MPR_CANTRECIBIDA,
+			   MPR_COSTOTUSD ) 
+			   
+			   SELECT  MPR_DPV_NUMERO,
+               '$almacen' AS MPR_AMC_CODIGO,
+               MPR_DPV_PVD_CODIGO,
+               '$sucursal' AS MPR_DPV_SCS_CODIGO,
+               'NCCI' AS MPR_DPV_TDT_CODIGO,
+               MPR_UPP_PDT_CODIGO,
+               MPR_UPP_UND_ID,
+               MPR_CTR_CODIGO,
+               '$cantidad' AS MPR_CANTIDAD,
+               MPR_COSTOT,
+               MPR_COSTOP,
+               '-1' AS MPR_FISICO,
+               '-1' AS MPR_LOGICO,
+               '-1' AS MPR_CONTABLE,
+               MPR_ACTIVO,
+               MPR_PORDCTO,
+               MPR_CANTXUND,
+               MPR_PORIVA,
+               MPR_TIVACOD,
+               MPR_HTI_ID,
+               '$cantidad' AS MPR_SALDOV,
+               MPR_COSTOBRUTO,
+               MPR_DESCDCTO,
+               MPR_PORDESC1,
+               MPR_PORDESC2,
+               MPR_PORDESC3,
+               MPR_PORDESC4,
+               MPR_PORDESC5,
+               MPR_GASTO,
+               MPR_DESCRI,
+               MPR_TIPCOSANT,
+               MPR_COSANT,
+               MPR_NUMORG,
+               MPR_TIPOORG,
+               MPR_LOTE,
+               MPR_FECHALOTE,
+               MPR_PRECIOLOTE,
+               '$cantidad' AS MPR_CANTAUX,
+               MPR_COSTOUSD,
+               MPR_AMPLIO,
+	          '$cantidad' AS  MPR_PIEZAS,
+	           '$cantidad' AS MPR_CANTRECIBIDA,
+	           MPR_COSTOTUSD  
+	        FROM ADN_MOVPRO WHERE MPR_DPV_TDT_CODIGO = 'ODC' AND MPR_DPV_PVD_CODIGO = '$proveedor' AND MPR_DPV_NUMERO = '$numero' AND MPR_DPV_SCS_CODIGO = '$sucursal' AND MPR_UPP_PDT_CODIGO = '$codigo' AND MPR_UPP_UND_ID = '$unidad' ";
+
+
+		$executeMovpro = $this->select($mov);
+
+
+		return $executeMovpro;
+	}
+
+
+	public function getNetCalculation($numero, $proveedor, $sucursal)
+	{
+
+		/*
+		$calculoNeto = "SELECT SUM( MPR_CANTIDAD * MPR_COSTOBRUTO ) as COSTO
+		FROM adn_movpro
+		WHERE MPR_DPV_NUMERO = '$numero'
+		AND MPR_DPV_PVD_CODIGO = '$proveedor'
+		AND MPR_DPV_SCS_CODIGO = '$sucursal'
+		AND MPR_DPV_TDT_CODIGO = 'NCCI'
+		AND MPR_DPV_TIPTRA = 'D'";
+
+
+
+		$neto = $this->select($calculoNeto);
+
+		$netoNew = !isset($neto['COSTO']) ? 0 : $neto['COSTO'];
+
+		$queryUpdate = "UPDATE adn_docpro SET DPV_NETO = ?
+		WHERE DPV_NUMERO = ?
+		AND DPV_PVD_CODIGO = ?
+		AND DPV_SCS_CODIGO = ?
+		AND DPV_TDT_CODIGO = 'NCCI'
+		AND DPV_ACTIVO = '1' AND DPV_TIPTRA = 'D'";
+
+
+		$executeUpdateDocpro = $this->update($queryUpdate, [$netoNew, $numero, $proveedor, $sucursal]);
+		*/
+
+		$docUpdate = "UPDATE adn_docpro SET DPV_CERRADO = 1 
+		WHERE DPV_NUMERO = ?
+		AND DPV_PVD_CODIGO = ?
+		AND DPV_SCS_CODIGO = ?
+		AND DPV_TDT_CODIGO = 'ODC'
+		AND DPV_ACTIVO = '1' AND DPV_TIPTRA = 'D'";
+
+
+		$executeDocproUpdate = $this->update($docUpdate, [$numero, $proveedor, $sucursal]);
+
+		return $executeDocproUpdate;
+	}
+
+
+	public function searchDocument($numero, $proveedor, $sucursal)
+	{
+
+		$query = "SELECT COUNT(*) AS CONTEO FROM ADN_DOCPRO WHERE DPV_NUMERO = '$numero' AND DPV_PVD_CODIGO ='$proveedor'  AND DPV_TDT_CODIGO = 'NCCI' AND DPV_SCS_CODIGO = '$sucursal' ";
+
+		$result = $this->select($query);
+		if (isset($result)) {
+			$result = $result['CONTEO'];
+		} else {
+			$result = 0;
+		}
+
+		return $result;
+	}
+
+
+
+	public function generatePdf($numero, $codigo, $sucursal)
+	{
+		$sql = "SELECT 
+		PDA_NUMERO, 
+		PDA_DET_CODIGO, 
+		PVD_NOMBRE,
+		PDA_UPP_PDT_CODIGO, 
+		PDT_DESCRIPCION, 
+		PDA_UPP_UND_ID, 
+		PDA_TK,
+		PDA_TA,
+		PDA_LLEGADA,
+		CONTEO_PESADAS.CANT_PESADAS AS TOTAL_PESADA,
+		IF(PDA_CANXUND >= 1 AND PDA_UPP_UND_ID = 'UND', CONCAT(IFNULL(ROUND(MOV.CANTIDAD/PDA_CANXUND,2), 0), ' CAJAS') , CONCAT(IFNULL(ROUND(MOV.CANTIDAD,2), 0), ' KG') )AS CANTIDAD, 
+		CONCAT(SUM(PDA_CANTIDAD),' ',PDA_UPP_UND_ID) AS RECIBIDO,
+		CONCAT(ROUND(SUM(IF(PDA_CANXUND >= 1 AND PDA_UPP_UND_ID = 'UND', PDA_CANTIDAD/PDA_CANXUND, 0 ) ), 2), ' CAJAS')AS CAJAS,
+		SUM(PDA_CANTIDAD),
+		CONCAT(ROUND(SUM(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG', PDA_CANTIDAD, 0)), 2 ),  ' KG/UND')AS KG_UND , 
+		IFNULL(PESADASCANASTAS.PCT_CANTIDAD,0)AS CANASTAS,
+		CONCAT(ROUND(SUM(PDA_EXTRA),2), ' KG') AS EXTRA,
+		MIN(PDA_INICIO) AS INICIO, 
+		MAX(PDA_FIN) AS FIN,
+		PDA_FECHA,
+		CONCAT(ROUND(TIME_TO_SEC(TIMEDIFF(MAX(PDA_FIN),MIN(PDA_INICIO)))/60,2), ' Min') AS DURACION,
+		ROUND(SUM(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG', PDA_CANTIDAD - PDA_EXTRA, PDA_EXTRA )), 2) AS NETO_MENOS_EXTRA,
+
+		EMPRESA.EMP_NOMBRE, EMPRESA.EMP_RIF, EMPRESA.EMP_DIRECCION1, EMPRESA.EMP_TELEFONO1, EMPRESA.EMP_EMAIL
+		FROM  ADN_PESADAS
+		-- JOIN ADN_PESADAS_CANASTAS ON PCT_NUMERO = PDA_CANASTA_TIPO
+		-- JOIN adn_canasta_tipo ON PCT_CTA_TIPO = CTA_CODIGO 
+		JOIN ADN_PRODUCTOS ON PDT_CODIGO = PDA_UPP_PDT_CODIGO
+		-- JOIN ADN_UNDAGRU ON UGR_PDT_CODIGO = PDA_UPP_PDT_CODIGO AND UGR_UND_ID = PDA_UPP_UND_ID
+		LEFT JOIN 
+		(
+			SELECT 
+				MPR_DPV_NUMERO, 
+				MPR_DPV_PVD_CODIGO,  
+				MPR_DPV_SCS_CODIGO, 
+				MPR_UPP_PDT_CODIGO, 
+				MPR_UPP_UND_ID, 
+				SUM(MPR_CANTIDAD) AS CANTIDAD 
+			FROM  ADN_MOVPRO 
+			WHERE MPR_DPV_TDT_CODIGO = 'ODC'
+			GROUP BY MPR_DPV_NUMERO, 
+				MPR_DPV_PVD_CODIGO, 
+				MPR_DPV_SCS_CODIGO,
+				MPR_UPP_PDT_CODIGO, 
+				MPR_UPP_UND_ID
+				
+		) AS MOV ON MOV.MPR_DPV_NUMERO = PDA_NUMERO 
+			AND MOV.MPR_DPV_PVD_CODIGO = PDA_DET_CODIGO 
+			AND MOV.MPR_DPV_SCS_CODIGO = PDA_SCS_CODIGO 
+			AND MOV.MPR_UPP_PDT_CODIGO = PDA_UPP_PDT_CODIGO 
+			AND MOV.MPR_UPP_UND_ID = PDA_UPP_UND_ID 
+			
+		JOIN ( SELECT '1' AS INDICE, EMP_NOMBRE, EMP_RIF, EMP_DIRECCION1, EMP_TELEFONO1, EMP_EMAIL FROM sistemasadn.`adn_empresa` LIMIT 1 )
+		AS EMPRESA ON EMPRESA.INDICE = '1'
+		JOIN ADN_PROVEEDORES ON PVD_CODIGO = PDA_DET_CODIGO
+		LEFT JOIN (
+			SELECT 
+			GROUP_CONCAT( PCT_CANTIDAD, ' - ',CTA_EQUIVALENCIA) AS PCT_CANTIDAD,
+			PCT_CTA_TIPO,
+			PCT_NUMERO AS PCTNUMERO,
+			PDA_NUMERO AS CANASTAS_PDANUMERO,
+			PDA_UPP_PDT_CODIGO AS PDTCODIGO
+			FROM ADN_PESADAS
+			JOIN ADN_PESADAS_CANASTAS ON PDA_CANASTA_TIPO = PCT_NUMERO 
+			JOIN `adn_canasta_tipo` ON cta_codigo = pct_cta_tipo
+			WHERE  PCT_CTA_TIPO != '0000'
+			GROUP BY PDA_NUMERO, PDA_UPP_PDT_CODIGO
+			
+		)
+		AS PESADASCANASTAS
+		ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
+		AND PESADASCANASTAS.PDTCODIGO = PDA_UPP_PDT_CODIGO
+		JOIN (
+			SELECT 
+			PDA_NUMERO AS PDANUMERO,
+			PDA_DET_CODIGO AS DET_CODIGO,
+			PDA_SCS_CODIGO AS SCS_CODIGO,
+			COUNT(PDA_NUMERO )AS CANT_PESADAS,
+			PDA_UPP_PDT_CODIGO AS PDAPRODUCTO
+			FROM ADN_PESADAS_CANASTAS 
+			JOIN ADN_PESADAS ON PCT_NUMERO = PDA_CANASTA_TIPO
+			GROUP BY PDA_NUMERO, PDA_DET_CODIGO,PDA_SCS_CODIGO,PDA_UPP_PDT_CODIGO
+		)
+		AS CONTEO_PESADAS
+		ON CONTEO_PESADAS.PDANUMERO = PDA_NUMERO
+		AND CONTEO_PESADAS.DET_CODIGO = PDA_DET_CODIGO
+		AND CONTEO_PESADAS.SCS_CODIGO = PDA_SCS_CODIGO 
+		AND CONTEO_PESADAS.PDAPRODUCTO = PDA_UPP_PDT_CODIGO 
+		WHERE PDA_TIPO = '1' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
+		AND  PDA_SCS_CODIGO = '@SUCURSAL'
+		GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID;";
+
+		$newSql = str_replace('@SUCURSAL', $sucursal, str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql)));
+
+
+		$execute = $this->select_all($newSql);
+
+		return $execute;
+	}
+
+	public function generatePdfGeneral($numero, $codigo, $sucursal)
+	{
+		$sql = "SELECT 
+			PDA_NUMERO, 
+			PDA_DET_CODIGO, 
+			PVD_NOMBRE,
+			PDA_TK,
+			PDA_TA,
+			PDA_LLEGADA,
+			COUNT(PDA_UPP_PDT_CODIGO) AS PRODUCTOS,
+			CONCAT(ROUND(SUM(IF(PDA_CANXUND >= 1 AND PDA_UPP_UND_ID = 'UND', PDA_CANTIDAD/PDA_CANXUND, 0 )) , 2), ' CAJAS') AS CAJAS,
+			CONCAT(ROUND(SUM(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG', PDA_CANTIDAD, 0)), 2 ), ' KG/UND')AS KG_UND ,
+			CONCAT(SUM(ROUND(PDA_EXTRA,2)), ' KG') AS EXTRA,
+			IFNULL(PESADASCANASTAS.PCT_CANTIDAD,0)AS TARAS,
+			ROUND( SUM(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG',PDA_CANTIDAD - PDA_EXTRA, PDA_EXTRA) ),2) AS BRUTO,
+			MIN(PDA_INICIO) AS INICIO, 
+			MAX(PDA_FIN) AS FIN,
+			PDA_FECHA,
+			CONCAT(ROUND(TIME_TO_SEC(TIMEDIFF(MAX(PDA_FIN),MIN(PDA_INICIO)))/60,2), ' Min') AS DURACION,
+			EMPRESA.EMP_NOMBRE, EMPRESA.EMP_RIF, EMPRESA.EMP_DIRECCION1, EMPRESA.EMP_TELEFONO1, EMPRESA.EMP_EMAIL
+		FROM  ADN_PESADAS
+		JOIN ( 
+			SELECT '1' AS 
+			INDICE, 
+			EMP_NOMBRE, 
+			EMP_RIF, 
+			EMP_DIRECCION1, 
+			EMP_TELEFONO1, 
+			EMP_EMAIL 
+			FROM sistemasadn.`adn_empresa` 
+			LIMIT 1 
+			) AS EMPRESA ON EMPRESA.INDICE = '1'
+		JOIN ADN_PROVEEDORES ON PVD_CODIGO = PDA_DET_CODIGO
+			LEFT JOIN (
+			SELECT 
+			GROUP_CONCAT( PCT_CANTIDAD, ' - ',CTA_EQUIVALENCIA) AS PCT_CANTIDAD,
+			PCT_CTA_TIPO,
+			PCT_NUMERO AS PCTNUMERO,
+			PDA_NUMERO AS CANASTAS_PDANUMERO,
+			PDA_DET_CODIGO AS DET,
+			PDA_UPP_PDT_CODIGO AS PDTCODIGO
+			FROM ADN_PESADAS
+			JOIN ADN_PESADAS_CANASTAS ON PDA_CANASTA_TIPO = PCT_NUMERO 
+			JOIN `adn_canasta_tipo` ON cta_codigo = pct_cta_tipo
+			WHERE  PCT_CTA_TIPO != '0000'
+			GROUP BY PDA_NUMERO, PDA_DET_CODIGO
+			
+		)AS PESADASCANASTAS
+		ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
+		 AND PESADASCANASTAS.DET = PDA_DET_CODIGO
+		WHERE 
+		PDA_TIPO = '1'
+		AND PDA_NUMERO = '@NUMERO'  
+		AND PDA_DET_CODIGO = '@CODIGO'
+		AND  PDA_SCS_CODIGO = '@SUCURSAL'
+		AND PDA_INICIO <>  '00:00:00'
+		GROUP BY PDA_NUMERO, PDA_DET_CODIGO;";
+
+		$newSql = str_replace('@SUCURSAL', $sucursal, str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql)));
+
+		$execute = $this->select_all($newSql);
+
+		return $execute;
+	}
+
+
+
+
+
+	public function correlative()
+	{
+
+		$query = "SELECT IFNULL(IF(LENGTH(MAX(CONVERT(DOC2.PCT_NUMERO, SIGNED)) + 1) < 10, LPAD(MAX(CONVERT(DOC2.PCT_NUMERO, SIGNED)) + 1, 10, '0'), MAX(CONVERT(DOC2.PCT_NUMERO, SIGNED)) + 1), '0000000001') AS CORRELATIVO
+    FROM ADN_PESADAS_CANASTAS AS DOC2 ORDER BY PCT_NUMERO DESC LIMIT 1;";
+
+		$execute = $this->select($query);
+
+		$correlativo = !isset($execute['CORRELATIVO']) ? '0001' : $execute['CORRELATIVO'];
+
+		return $correlativo;
+	}
+
+	public function setHeavyBaskets($correlativo, $tipo, $cantidad, $pesada)
+	{
+
+		$insert = "INSERT INTO `adn_pesadas_canastas` (`PCT_NUMERO`, `PCT_CTA_TIPO`,`PCT_CANTIDAD`, `PCT_PDA_ID`) VALUES (?, ?, ?,?);";
+
+		$execute = $this->insert($insert, [$correlativo, $tipo, $cantidad, $pesada]);
+
+
+		return $execute;
+	}
+
+	public function getProducts()
+	{
+
+
+		$query = "SELECT   PDT_CODIGO AS CODIGO,
+					PDT_DESCRIPCION AS DESCRIPCION,    
+					IFNULL(UGR_UND_ID,'') AS UND,
+					PDT_LICLTSCAJA AS CAPACIDAD
+
+				FROM ADN_PRODUCTOS  
+					INNER JOIN ADN_UNDPROD ON UPP_PDT_CODIGO = PDT_CODIGO
+					INNER JOIN ADN_UNDAGRU ON UGR_PDT_CODIGO = PDT_CODIGO 
+					INNER JOIN ADN_PRECIOS ON PRE_UGR_PDT_CODIGO = UGR_PDT_CODIGO AND PRE_UGR_UND_ID = UGR_UND_ID
+					INNER JOIN ADN_PRELISTA ON PLT_LISTA = PRE_PLT_LISTA
+				WHERE PDT_CODIGO <> '+' 
+					AND PDT_CODIGO <> '-'
+					AND PDT_CODIGO <> '++'
+					AND PDT_CODIGO <> '--'
+					AND UGR_VENTA = '1'
+					AND IF(PDT_UPT_CODIGO = '000002',1,UGR_EX1)
+					AND PDT_ESTADO = '1'
+					AND PRE_PLT_LISTA='A'";
+
+		$execute = $this->select_all($query);
+
+
+		return $execute;
+	}
+
+	public function setProducts($numero, $scs_codigo, $pda_det_codigo, $upp_pdt_codigo, $upp_und_id, $tipo, $canxund, $cantidad)
+	{
+		$insert = "INSERT INTO `adn_pesadas_extra` (`PEX_NUMERO`, `PEX_SCS_CODIGO`, `PEX_DET_CODIGO`, `PEX_UPP_PDT_CODIGO`, `PEX_UPP_UND_ID`, `PEX_CANXUND`, `PEX_CANTIDAD`, `PEX_TIPO`) VALUES (?, ?, ?, ?, ?, ?, ?, ?); ";
+
+		$execute = $this->insert($insert, [$numero, $scs_codigo, $pda_det_codigo, $upp_pdt_codigo, $upp_und_id, $canxund, $cantidad, $tipo]);
+
+		return $execute;
+	}
+
+	public function postClose($numero, $sucursal, $proveedor, $tipo)
+	{
+
+		$call = "CALL `POSTCERRAR_PESADAS_ODC`('$numero', '$proveedor', '$sucursal','$tipo')";
+
+		$execute = $this->select($call);
+		//$execute = 1;
+		return $execute;
+	}
+
+	public function insertCall($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $tipoCanasta)
+	{
+		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
+		$call = "CALL INSERT_PESADAS('$numero', '$amc_origen', '$amc_destino', '$sucursal', '$producto', '$proveedor', '$und', '$canxund', '$cantidad', '$canasta', '$extra', '$ubica', '$fecha', '$inicio', '$fin', '$llegada', '$tk', '$ta','$user','1','$tipoCanasta')";
+
+		//	dep($call);
+
+		//	die();
+		$execute = $this->select($call);
+		return $execute;
+	}
+
+
+	public function generatePdfDetallPesada($numero, $codigo, $producto)
+	{
+		$sql = "SELECT
+	ROUND(INFOGENERAL.NETO,2) AS NETO,
+	ROUND(INFOGENERAL.BRUTO,2) AS BRUTO,
+	ROUND(INFOGENERAL.EXTRA,2) AS EXTRA,
+	PDA_TK,
+	PDA_TA,
+	PDA_FECHA,
+	PVD_CODIGO,
+	PVD_NOMBRE,
+	PDA_NUMERO,
+	PDA_UPP_PDT_CODIGO,
+	PDA_DET_CODIGO,
+	PDA_UPP_UND_ID,
+	PDA_CANTIDAD,
+	PDA_CANXUND,
+	PDA_CANASTA,
+	CTA_DESCRIPCION,
+	PDA_INICIO,
+	PDA_FIN,
+	PDA_LLEGADA,
+	ROUND(IF(PDA_CANXUND > 0 AND PDA_UPP_UND_ID = 'UND', PDA_CANTIDAD/PDA_CANXUND, 0), 2) AS CAJAS,
+	ROUND(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG', PDA_CANTIDAD - PDA_EXTRA, 0), 2)AS 'KG_UND',
+	ROUND(PDA_CANTIDAD,2) AS PDA_CANTIDAD,
+	ROUND(PDA_EXTRA, 2) AS PDA_EXTRA,
+	IFNULL(PESADASCANASTAS.PCT_CANTIDAD,0)AS TARAS,
+	OPE_NOMBRE,
+	EMPRESA.EMP_NOMBRE, EMPRESA.EMP_RIF, EMPRESA.EMP_DIRECCION1, EMPRESA.EMP_TELEFONO1, EMPRESA.EMP_EMAIL
+	FROM ADN_PESADAS
+	JOIN ADN_PESADAS_CANASTAS ON PDA_CANASTA_TIPO = PCT_NUMERO 
+	JOIN ADN_CANASTA_TIPO ON CTA_CODIGO = PCT_CTA_TIPO
+	JOIN ADN_DOCPRO ON PDA_DET_CODIGO = DPV_PVD_CODIGO AND PDA_NUMERO = DPV_NUMERO
+	JOIN ADN_PROVEEDORES ON PVD_CODIGO = DPV_PVD_CODIGO
+	JOIN ( SELECT '1' AS INDICE, EMP_NOMBRE, EMP_RIF, EMP_DIRECCION1, EMP_TELEFONO1, EMP_EMAIL FROM sistemasadn.`adn_empresa` LIMIT 1 ) AS EMPRESA
+	JOIN ( SELECT OPE_NOMBRE, OPE_NUMERO FROM sistemasadn.adn_usuarios) AS OPERADORES ON OPE_NUMERO = PDA_USUARIO
+	JOIN (
+		SELECT
+		/*PDA_NUMERO AS PDANUMERO, 
+		PDA_UPP_PDT_CODIGO AS PDT_CODIGO,
+		PDA_DET_CODIGO AS DETCODIGO,
+		PDA_UPP_UND_ID AS UNIDAD,
+		SUM(PDA_CANTIDAD )as PDACANTIDAD,
+		PDA_CANXUND AS CANXUND,
+		PDA_CANASTA AS CANASTA,
+		CTA_DESCRIPCION AS CANASTADESCRI,
+		PDA_INICIO AS INICIO,
+		PDA_FIN AS FIN,
+		*/
+		PDA_UPP_PDT_CODIGO AS PDT_CODIGO,
+		IF(PDA_CANXUND > 0 AND PDA_UPP_UND_ID = 'UND', PDA_CANTIDAD/PDA_CANXUND, 0) AS CAJAS,
+		SUM(PDA_EXTRA) AS EXTRA,
+		SUM(PDA_CANTIDAD) AS BRUTO,
+		SUM(IF(PDA_CANXUND >= 0 AND PDA_UPP_UND_ID = 'KG', PDA_CANTIDAD - PDA_EXTRA, PDA_CANTIDAD)) AS NETO
+		FROM ADN_PESADAS
+		WHERE PDA_NUMERO = '$numero'
+		AND PDA_DET_CODIGO = '$codigo'
+		AND PDA_UPP_PDT_CODIGO = '$producto'
+		AND PDA_TIPO = '1'
+		GROUP BY PDA_UPP_PDT_CODIGO
+	) AS INFOGENERAL ON INFOGENERAL.PDT_CODIGO = PDA_UPP_PDT_CODIGO
+		LEFT JOIN (
+			SELECT 
+			ID AS PDAID,
+			GROUP_CONCAT( PCT_CANTIDAD, ' - ',CTA_EQUIVALENCIA) AS PCT_CANTIDAD,
+			PCT_CTA_TIPO,
+			PCT_NUMERO AS PCTNUMERO,
+			PDA_NUMERO AS CANASTAS_PDANUMERO,
+			PDA_UPP_PDT_CODIGO AS PDTCODIGO
+			FROM ADN_PESADAS
+			JOIN ADN_PESADAS_CANASTAS ON PDA_CANASTA_TIPO = PCT_NUMERO 
+			JOIN `adn_canasta_tipo` ON cta_codigo = pct_cta_tipo
+			WHERE  PCT_CTA_TIPO != '0000'
+			GROUP BY ID, PDA_NUMERO, PDA_UPP_PDT_CODIGO
+			
+		)
+		AS PESADASCANASTAS
+		ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
+		AND PESADASCANASTAS.PDTCODIGO = PDA_UPP_PDT_CODIGO
+		AND PESADASCANASTAS.PDAID = ID	
+	WHERE PDA_NUMERO = '$numero'
+	AND PDA_DET_CODIGO = '$codigo'
+	AND PDA_UPP_PDT_CODIGO = '$producto'
+	AND PDA_TIPO = '1'
+	GROUP BY ID,PDA_NUMERO, PDA_SCS_CODIGO, PDA_DET_CODIGO, PDA_UPP_PDT_CODIGO;";
+
+
+		$execute = $this->select_all($sql);
+		return $execute;
+	}
+
+
+	public function cut()
+	{
+
+		$execute = $this->handleLockWaitTimeout();
+
+		return $execute;
+	}
+}

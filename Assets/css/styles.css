@@ -1,0 +1,365 @@
+#divLoading {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(254, 254, 255, .95);
+  z-index: 999999999999;
+  display: none;
+}
+
+#divLoading img {
+  width: 55px;
+  height: 55px;
+}
+
+.divLoading {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(254, 254, 255, .95);
+  z-index: 999999999999;
+  display: none;
+}
+
+.divLoading img {
+  width: 55px;
+  height: 55px;
+}
+
+
+.swal2-container {
+  z-index: 1080;
+}
+
+
+[data-letters]:before {
+  content: attr(data-letters);
+  display: inline-block;
+  font-size: 1em;
+  width: 2.5em;
+  height: 2.5em;
+  line-height: 2.5em;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(0, 73, 154, 0.9);
+  vertical-align: middle;
+  margin-right: 1em;
+  color: white;
+}
+
+.product {
+  position: relative;
+  width: 3.375rem;
+  height: 3.375rem;
+  cursor: pointer;
+}
+
+
+.product img {
+  width: 100%;
+  height: 100%;
+}
+
+.product .product-initial {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background-color: #8592a3;
+  font-weight: 700;
+}
+
+.product.product-online:after,
+.product.product-offline:after,
+.product.product-away:after,
+.product.product-busy:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.product.product-online:after {
+  background-color: #71dd37;
+}
+
+.product.product-offline:after {
+  background-color: #8592a3;
+}
+
+.product.product-away:after {
+  background-color: #ffab00;
+}
+
+.product.product-busy:after {
+  background-color: #ff3e1d;
+}
+
+.custom-radio-button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+/*===========================  Estilos botones de pagos =======================*/
+
+
+
+.card-btn-pay label {
+  border: 1px solid #d9dee3;
+  transition: transform 0.1s;
+}
+
+.card-btn-pay label:hover {
+  cursor: pointer;
+  transform: scale(1.02);
+  transition: transform 0.1s;
+  border: 1px solid #0d5afc;
+}
+
+.card-btn-pay .form-check-input {
+  opacity: 0;
+}
+
+
+.card-btn-pay input[type="radio"]:checked+label {
+
+  background-color: #165efaa1;
+  border-color: #286bf9;
+  color: white;
+
+}
+
+.new-btn-light {
+  color: #3A416F !important;
+  background: #e9ecef;
+}
+
+.btn {
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+
+/*=================== Estilos de botones para ticktes =================*/
+
+
+.card-tickets-success {
+
+  box-shadow: 0 0rem 0.4rem 0px rgb(161 172 184 / 34%) !important;
+  font-size: 0.75rem;
+}
+
+.btn-ticket-success {
+  background-color: #8bff8d;
+  background-image: linear-gradient(0deg, #8bff8d 0%, #2AF598 100%);
+}
+
+.btn-ticket-danger {
+  background-color: #FFE53B;
+  background-image: linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);
+
+}
+
+
+.card-tickets-success:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 0px 1px #54b120, 0px 0px 5px 0px #357f0d7a;
+  border: solid #95fb5f 2px;
+}
+
+.card-tickets-danger {
+
+  box-shadow: 0 0rem 0.4rem 0px rgb(161 172 184 / 34%) !important;
+  font-size: 0.75rem;
+}
+
+
+.card-tickets-danger:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 0px 1px #ff3e1d, 0px 0px 5px 0px #ff3e1d;
+  border: solid #ff3e1d 2px;
+}
+
+.card-scroll {
+  height: 500px;
+
+  overflow-y: scroll;
+}
+
+
+
+/****** PERSONALIZADO ****************/
+
+.toggleDashboard {
+
+  margin-left: 0 !important;
+
+}
+
+
+.toggleSnider {
+  transform: translateX(-17.125rem) !important;
+}
+
+.details-odc-style {
+  transition: transform 0.2s ease;
+
+}
+
+
+.details-odc-style:hover {
+  border: 2px solid #00ff0b;
+  transform: scale(1.04);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+}
+
+.list-odc-style:hover {
+  border: 2px solid #00ff0b;
+  cursor: pointer;
+
+}
+
+
+.weight {
+  background-color: black;
+  color: red;
+  text-align: end;
+  font-weight: bold;
+  font-size: 21px;
+  border: 1px solid white !important;
+}
+
+#manual-label {
+  display: none;
+}
+
+/*#container-items-details::-webkit-scrollbar {
+  display: none;
+}*/
+
+
+#container-items-details {
+  height: 400px;
+  overflow-y: scroll;
+  padding: 9px;
+}
+
+#sidenav-main{
+
+  background-image: linear-gradient(195deg, #323a54, #1a2035) !important;
+
+}
+
+#bg-new-dark{
+
+  background-image: linear-gradient(195deg, #323a54, #1a2035) !important;
+  
+}
+
+.bg-info-doc{
+  background: #dcdcdc21 !important;
+
+}
+
+.inputs-disable{
+  pointer-events: none;
+}
+
+.selected{
+  border: 2px solid #00ff0b;
+  transform: scale(1.04);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-success-previo{
+ background-color:   #f0f8ff52;
+}
+
+.details-odc-style-weight{
+
+  border: 2px solid #ffe309;
+}
+
+
+
+.select2-container--default .select2-selection--single{
+  background-color: #202940 !important;
+  color:white;
+  border: none !important;
+}
+
+.select2-container--default .select2-selection--single:focus-visible{
+  outline: 2px solid #40517b;
+}
+
+.select2-search__field{
+  background-color: #202940 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.select2-search__field:focus-visible{
+  outline: 2px solid #40517b;
+}
+.select2-selection__rendered{
+  color: white !important;
+  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.select2-search--dropdown{
+  background-color: #232b40 !important;
+}
+
+
+.select2-results__option--selectable{
+  background-color: #232b40 !important;
+  transition:  all .5s;
+}
+
+
+.select2-results__option--selectable:hover{
+  background-color: #253150 !important;
+  transition:  all .5s;
+}
+
+
+.select2-results__message{
+  background-color: #253150 !important;
+}
+
+.select2-dropdown{
+  background-color: #232b40 !important;
+  border: none !important;
+  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.1);
+  padding: 5px !important;
+}
+
