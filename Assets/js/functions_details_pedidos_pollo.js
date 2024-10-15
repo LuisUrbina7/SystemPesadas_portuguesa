@@ -235,7 +235,7 @@ function getWeight() {
 		new XMLHttpRequest() :
 		new ActiveXObject('Microsoft.XMLHTTP');
 
-	var ajaxUrl = base_url + '/PedidosPollos/getWeight';
+	var ajaxUrl = base_url + '/PedidosPollo/getWeight';
 
 	request.open("GET", ajaxUrl, true);
 	request.send();
@@ -353,8 +353,8 @@ function aggRow() {
 	let arrival = '0000-00-00 00:00:00';
 
 
-	let tk = 'GUIA';
-	let ta = 'GUIA';
+	let tk = 'POLLO';
+	let ta = 'POLLO';
 
 	let equivalent = 0;
 	let extraAmount = 0;
@@ -583,7 +583,7 @@ function deleteRow(index) {
 					new XMLHttpRequest() :
 					new ActiveXObject('Microsoft.XMLHTTP');
 
-				var ajaxUrl = base_url + '/PedidosPollos/delete?id=' + id;
+				var ajaxUrl = base_url + '/PedidosPollo/delete?id=' + id;
 
 				request.open("GET", ajaxUrl, true);
 				request.send();
@@ -866,7 +866,7 @@ function setInfo(data) {
 		let pdtCodigo = document.getElementById('codigo-pdt').textContent;
 		let dpvProvider = document.getElementById('dpv_pvd').value;
 
-		ajaxUrl = base_url + "/PedidosPollos/content?id=" + dpvNumber + "&tr=" + dpvProvider + "&pdt=" + pdtCodigo;
+		ajaxUrl = base_url + "/PedidosPollo/content?id=" + dpvNumber + "&vd=" + dpvProvider + "&pdt=" + pdtCodigo;
 
 
 	};
@@ -983,7 +983,7 @@ function insertDetails() {
 		data.forEach(function (element, index) {
 
 			forData.append("PDA_NUMERO", dpvNumber);
-			forData.append("PDA_AMC_ORIGEN", '004');
+			forData.append("PDA_AMC_ORIGEN", '001');
 			forData.append("PDA_AMC_DESTINO", amc);
 			forData.append("PDA_SCS_CODIGO", '000001');
 			forData.append("PDA_UPP_PDT_CODIGO", pdtCodigo);
@@ -1014,7 +1014,7 @@ function insertDetails() {
 			new XMLHttpRequest() :
 			new ActiveXObject('Microsoft.XMLHTTP');
 
-		var ajaxUrl = base_url + '/PedidosPollos/insertDetails';
+		var ajaxUrl = base_url + '/PedidosPollo/insertDetails';
 
 
 
@@ -1103,7 +1103,7 @@ function updateDetails(event) {
 			new XMLHttpRequest() :
 			new ActiveXObject('Microsoft.XMLHTTP');
 
-		var ajaxUrl = base_url + '/PedidosPollos/updateDetails';
+		var ajaxUrl = base_url + '/PedidosPollo/updateDetails';
 
 		console.log(ajaxUrl);
 
@@ -1151,20 +1151,23 @@ function updateDetails(event) {
 
 function closeCount() {
 
+	let indicador = 0;
 
-	if (indType)
-		validatePresale();
 
+	if (indType) {
+		
+		indicador = validatePresale();
+	}
 
 	Swal.fire({
 		title: "Cerrar el conteo?",
-		text: validatePresale() ? " Verificar cantidades, existe un item con monto diferente a lo pesado." : "Presiona sí para continuar!",
+		text: indicador ? " Verificar cantidades, existe un item con monto diferente a lo pesado." : "Presiona sí para continuar!",
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
 		confirmButtonText: "Sí, cerrar!",
-		input: validatePresale() ? 'password' : null,
+		input: indicador ? 'password' : null,
 		inputPlaceholder: 'Ingresa el número de verificación',
 		inputAttributes: {
 			style: 'color: white;'
@@ -1177,6 +1180,7 @@ function closeCount() {
 	}).then((result) => {
 		if (result.isConfirmed) {
 			let details = new FormData();
+			
 			let dpvNumber = document.getElementById('dpv_numero').value;
 			let dpvProvider = document.getElementById('dpv_pvd').value;
 
@@ -1188,7 +1192,7 @@ function closeCount() {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollos/getDetailsToEdit';
+			var ajaxUrl = base_url + '/PedidosPollo/getDetailsToEdit';
 
 			request.open("POST", ajaxUrl, true);
 			request.send(details);
@@ -1208,7 +1212,7 @@ function closeCount() {
 						});
 
 						add();
-						window.location.href = base_url + '/PedidosPollos/document';
+						window.location.href = base_url + '/PedidosPollo/document';
 					} else {
 
 						Swal.fire({
@@ -1399,7 +1403,7 @@ function ignoreHeavy(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollos/insertSkip';
+			var ajaxUrl = base_url + '/PedidosPollo/insertSkip';
 
 			console.log(ajaxUrl);
 
@@ -1502,7 +1506,7 @@ function seeLots() {
 		new XMLHttpRequest() :
 		new ActiveXObject('Microsoft.XMLHTTP');
 
-	var ajaxUrl = base_url + '/PedidosPollos/seeLots?pdt=' + pdtCode + '&und=' + pdtUnd;
+	var ajaxUrl = base_url + '/PedidosPollo/seeLots?pdt=' + pdtCode + '&und=' + pdtUnd;
 
 	request.open("GET", ajaxUrl, true);
 	request.send();
@@ -1559,9 +1563,9 @@ function reportDetailsPesada() {
 
 	var ajaxUrl =
 		base_url +
-		"/PedidosPollos/viewPdfDetailsPesada?id=" +
+		"/PedidosPollo/viewPdfDetailsPesada?id=" +
 		dclCodigo +
-		"&tr=" +
+		"&vd=" +
 		traCodigo +
 		"&pdt=" +
 		pdtCodigo;
@@ -1599,7 +1603,7 @@ async function cut() {
 				return;
 			}
 
-			const ajaxUrl = base_url + '/PedidosPollos/cut';
+			const ajaxUrl = base_url + '/PedidosPollo/cut';
 			const response = await fetch(ajaxUrl);
 
 			if (!response.ok) {
@@ -1649,7 +1653,7 @@ function ticketByHeavy(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollos/ticketByHeavy?id=' + dclCodigo + '&tr=' + traCodigo + '&pdt=' + pdtCodigo;
+			var ajaxUrl = base_url + '/PedidosPollo/ticketByHeavy?id=' + dclCodigo + '&vd=' + traCodigo + '&pdt=' + pdtCodigo;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();
@@ -1722,6 +1726,7 @@ function validatePresale() {
 
 		}
 	});
+
 
 
 

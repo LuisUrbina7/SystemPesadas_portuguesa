@@ -63,6 +63,8 @@ class PedidosPollo extends Controllers
 	public function insertDetails()
 	{
 
+	
+
 
 		if ($_POST) {
 
@@ -96,11 +98,6 @@ class PedidosPollo extends Controllers
 			try {
 
 
-				/*	if ($this->model->isTransactionActive()) {
-					$this->model->commit();
-				}
-
-				$this->model->beginTransaction();*/
 
 
 				foreach ($cantidad as $index => $data) {
@@ -108,29 +105,6 @@ class PedidosPollo extends Controllers
 					$insert = $this->model->insertCall($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad[$index], $canasta[$index], $extra[$index], $ubica[$index], $fecha, $inicio[$index], $fin[$index], $llegada, $tk, $ta, $tipoCanasta[$index]);
 				}
 
-
-
-				/*
-				foreach ($cantidad as $index => $data) {
-
-					$correlative = $this->model->correlative();
-
-
-					$insert = $this->model->insertDetails($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad[$index], $correlative, $canasta[$index], $extra[$index], $ubica[$index], $fecha, $inicio[$index], $fin[$index], $llegada, $tk, $ta);
-
-					if ($insert != 0) {
-
-
-						foreach (json_decode($tipoCanasta[$index]) as $canastaJson) {
-
-
-							$insertBridge = $this->model->setHeavyBaskets($correlative, $canastaJson->codigo, $canastaJson->cantidad, $insert);
-						}
-					}
-				}*/
-
-
-				//	$this->model->commit();
 
 				$arrResponse = array('status' => true, 'msg' => 'Registrado correctamente.');
 				echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
@@ -300,7 +274,7 @@ class PedidosPollo extends Controllers
 
 			try {
 
-				$validate = $this->model->validateGuia($numero, $transportista);
+				$validate = $this->model->validateDocumento($numero, $transportista);
 
 				if ($validate) {
 

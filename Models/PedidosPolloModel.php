@@ -36,6 +36,7 @@ class PedidosPolloModel extends Mysql
 							-- AND DCL_REC_NUMERO = '' 
 							 AND DCL_TIPTRA = 'D' 
 							 AND DCL_NUMGUIA = ''  
+							 AND DCL_TDT_CODIGO = 'PEDW'
 							-- INNER JOIN ADN_TRANSPORTISTAS ON DCG_TRA_CODIGO = TRA_CODIGO  
 							INNER JOIN (
 							SELECT 
@@ -61,7 +62,7 @@ class PedidosPolloModel extends Mysql
 							MIN(PDA_INICIO) AS INICIO, 
 							MAX(PDA_FIN) AS FIN,
 							CONCAT(ROUND(TIME_TO_SEC(TIMEDIFF(MAX(PDA_FIN),MIN(PDA_INICIO)))/60,2), ' MIN') AS DURACION  
-							FROM ADN_PESADAS WHERE PDA_TIPO = '2'  
+							FROM ADN_PESADAS WHERE PDA_TIPO = '4'  
 							AND PDA_INICIO <> '00:00:00' 
 							GROUP BY PDA_NUMERO,PDA_SCS_CODIGO, PDA_DET_CODIGO) AS PESADAS ON DCL_NUMERO = PDA_NUMERO 
 							AND DCL_VEN_CODIGO = PDA_DET_CODIGO 
@@ -147,12 +148,13 @@ class PedidosPolloModel extends Mysql
 								FROM ADN_PESADAS 
 								WHERE PDA_NUMERO = '$number' 
 								AND PDA_DET_CODIGO = '$vnd' 
-								AND PDA_TIPO = '2'
+								AND PDA_TIPO = '4'
 								GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID) AS PESADO ON PESADO.PDA_NUMERO = DCL_NUMERO 
 									AND PESADO.PDA_DET_CODIGO = DCL_VEN_CODIGO 
 									AND PESADO.PDA_UPP_PDT_CODIGO = MCL_UPP_PDT_CODIGO 
 									AND PESADO.PDA_UPP_UND_ID = MCL_UPP_UND_ID
 							WHERE DCL_TIPTRA = 'D'
+							AND DCL_TDT_CODIGO = 'PEDW'
 						GROUP BY MCL_UPP_PDT_CODIGO;";
 
 
@@ -221,7 +223,7 @@ class PedidosPolloModel extends Mysql
 	public function getPesadas($numero, $proveedor, $sku)
 	{
 
-		$query = "SELECT `ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`, `PDA_AMC_DESTINO`, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`, `PDA_CANXUND`, `PDA_CANTIDAD`, `PDA_CANASTA_TIPO`, `PDA_CANASTA`, ROUND( `PDA_EXTRA`,2) AS PDA_EXTRA, `PDA_UBICA`, `PDA_FECHA`, `PDA_INICIO`, `PDA_FIN`, `PDA_LLEGADA`, `PDA_TK`, `PDA_TA`, `PDA_TRANF_ID`, `PDA_USUARIO`, `PDA_TIPO`, PDA_MOTIVO  FROM adn_pesadas WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_UPP_PDT_CODIGO = '$sku' AND PDA_TIPO = '2' order by ID ASC";
+		$query = "SELECT `ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`, `PDA_AMC_DESTINO`, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`, `PDA_CANXUND`, `PDA_CANTIDAD`, `PDA_CANASTA_TIPO`, `PDA_CANASTA`, ROUND( `PDA_EXTRA`,2) AS PDA_EXTRA, `PDA_UBICA`, `PDA_FECHA`, `PDA_INICIO`, `PDA_FIN`, `PDA_LLEGADA`, `PDA_TK`, `PDA_TA`, `PDA_TRANF_ID`, `PDA_USUARIO`, `PDA_TIPO`, PDA_MOTIVO  FROM adn_pesadas WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_UPP_PDT_CODIGO = '$sku' AND PDA_TIPO = '4' order by ID ASC";
 
 
 
@@ -244,41 +246,31 @@ class PedidosPolloModel extends Mysql
 		return $delete;
 	}
 
-	public function getDetailsToEdit($numero, $proveedor)
+
+	public function validateDocumento($numero, $vnd)
 	{
 
-		$query = "SELECT PDA_NUMERO,PDA_AMC_ORIGEN,PDA_AMC_DESTINO,PDA_SCS_CODIGO,PDA_DET_CODIGO,PDA_UPP_PDT_CODIGO,PDA_UPP_UND_ID, SUM(PDA_CANTIDAD) AS PDA_CANTIDAD  FROM adn_pesadas WHERE PDA_AMC_ORIGEN = '$vnd' AND PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_TIPO = '1' GROUP BY PDA_UPP_PDT_CODIGO;";
-
-		$result = $this->select_all($query);
-
-		return $result;
-	}
-
-	public function validateGuia($numero, $vnd)
-	{
-
-		$query = "SELECT IF(PESADAS.CONTEO = GUIA.CONTEO_GUIA,1,0) AS VALIDATE
+		$query = "SELECT IF(PESADAS.CONTEO = INDICE.CONTEO_DOCUMENTO,1,0) AS VALIDATE
 		FROM (
 			SELECT PDA_NUMERO AS NUMERO, PDA_DET_CODIGO AS DET, 
 			ROW_NUMBER() OVER (ORDER BY PDA_UPP_PDT_CODIGO DESC) AS CONTEO  
 			FROM ADN_PESADAS
-			WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$vnd' AND PDA_TIPO = '2'
+			WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$vnd' AND PDA_TIPO = '4'
 			GROUP BY PDA_UPP_PDT_CODIGO LIMIT 1
 		) AS PESADAS
 		JOIN (
-			SELECT DOCUMENTOS.DCL_NUMGUIA AS NUMERO_GUIA, DOCUMENTOS.TRA_CODIGO AS DET_GUIA, COUNT(*) AS CONTEO_GUIA
+			SELECT DOCUMENTOS.DCL_NUMERO AS NUMERO, DOCUMENTOS.DCL_VEN_CODIGO AS VENDEDOR, COUNT(*) AS CONTEO_DOCUMENTO
 			FROM (
-				SELECT DCL_NUMGUIA, TRA_CODIGO
+				SELECT DCL_NUMERO, DCL_VEN_CODIGO
 				FROM ADN_MOVCLI
 				JOIN ADN_DOCCLI ON MCL_DCL_NUMERO = DCL_NUMERO AND MCL_DCL_SCS_CODIGO = DCL_SCS_CODIGO AND MCL_DCL_TDT_CODIGO = DCL_TDT_CODIGO AND MCL_DCL_TIPTRA = DCL_TIPTRA
-				JOIN ADN_DOCCLIGUIA ON DCL_NUMGUIA = DCG_NUMERO
-				JOIN ADN_TRANSPORTISTAS ON TRA_CODIGO = DCG_TRA_CODIGO
-				WHERE DCL_NUMGUIA = '$numero' AND TRA_CODIGO = '$vnd'
+				
+				WHERE DCL_NUMERO = '$numero' AND DCL_VEN_CODIGO = '$vnd' AND DCL_TDT_CODIGO = 'PEDW'
 				GROUP BY MCL_UPP_PDT_CODIGO
 			) AS DOCUMENTOS
-			GROUP BY DOCUMENTOS.DCL_NUMGUIA, DOCUMENTOS.TRA_CODIGO
-		) AS GUIA
-		ON PESADAS.NUMERO = GUIA.NUMERO_GUIA AND PESADAS.DET = GUIA.DET_GUIA;";
+			GROUP BY DOCUMENTOS.DCL_NUMERO, DOCUMENTOS.DCL_VEN_CODIGO
+		) AS INDICE
+		ON PESADAS.NUMERO = INDICE.NUMERO AND PESADAS.DET = INDICE.VENDEDOR;";
 
 
 		$execute = $this->select($query);
@@ -341,7 +333,7 @@ class PedidosPolloModel extends Mysql
 					PDA_SCS_CODIGO,PDA_DET_CODIGO, 
 					CONCAT(PDA_NUMERO,':',PDA_DET_CODIGO,':',PDA_SCS_CODIGO) AS INDICE 
 					FROM ADN_PESADAS 
-						WHERE PDA_TIPO = '2' GROUP BY  INDICE
+						WHERE PDA_TIPO = '4' GROUP BY  INDICE
 					    HAVING INDICE = CONCAT('$numero',':','$vnd',':','000001');";
 
 		$select = $this->select($query);
@@ -353,7 +345,7 @@ class PedidosPolloModel extends Mysql
 							FROM `adn_pesadas`
 							WHERE PDA_NUMERO = '$numero'	    
 							AND PDA_DET_CODIGO = '$vnd'
-							AND PDA_TIPO = '2'
+							AND PDA_TIPO = '4'
 							AND PDA_SCS_CODIGO = '000001'
 							GROUP BY PDA_UPP_PDT_CODIGO); ";
 
@@ -449,7 +441,7 @@ class PedidosPolloModel extends Mysql
 		ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
 		 AND PESADASCANASTAS.DET = PDA_DET_CODIGO
 	WHERE 
-	PDA_TIPO = '2' 
+	PDA_TIPO = '4' 
 	AND PDA_NUMERO = '@NUMERO'  
 	AND PDA_DET_CODIGO = '@CODIGO'
 	AND PDA_INICIO <>  '00:00:00'
@@ -533,7 +525,7 @@ class PedidosPolloModel extends Mysql
 			AND CONTEO_PESADAS.SCS_CODIGO = PDA_SCS_CODIGO  
 			AND CONTEO_PESADAS.PESADA_PRODUCTO = PDA_UPP_PDT_CODIGO 
 			
-		WHERE PDA_TIPO = '2' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
+		WHERE PDA_TIPO = '4' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
 		GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID;";
 
 		$newSql = str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql));
@@ -581,7 +573,7 @@ class PedidosPolloModel extends Mysql
 	public function insertCall($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $tipoCanasta)
 	{
 		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
-		$call = "CALL INSERT_PESADAS('$numero', '$amc_origen', '$amc_destino', '$sucursal', '$producto', '$proveedor', '$und', '$canxund', '$cantidad', '$canasta', '$extra', '$ubica', '$fecha', '$inicio', '$fin', '$llegada', '$tk', '$ta','$user','2','$tipoCanasta')";
+		$call = "CALL INSERT_PESADAS('$numero', '$amc_origen', '$amc_destino', '$sucursal', '$producto', '$proveedor', '$und', '$canxund', '$cantidad', '$canasta', '$extra', '$ubica', '$fecha', '$inicio', '$fin', '$llegada', '$tk', '$ta','$user','4','$tipoCanasta')";
 
 
 
@@ -648,7 +640,7 @@ class PedidosPolloModel extends Mysql
 			WHERE PDA_NUMERO = '$numero'
 			AND PDA_DET_CODIGO = '$tra'
 			AND PDA_UPP_PDT_CODIGO = '$producto'
-			AND PDA_TIPO = '2'
+			AND PDA_TIPO = '4'
 			GROUP BY PDA_UPP_PDT_CODIGO
 		) AS INFOGENERAL ON INFOGENERAL.PDT_CODIGO = PDA_UPP_PDT_CODIGO
 					LEFT JOIN (
@@ -673,7 +665,7 @@ class PedidosPolloModel extends Mysql
 		WHERE PDA_NUMERO = '$numero'
 		AND PDA_DET_CODIGO = '$tra'
 		AND PDA_UPP_PDT_CODIGO = '$producto'
-		AND PDA_TIPO = '2'
+		AND PDA_TIPO = '4'
 		GROUP BY ID,PDA_NUMERO, PDA_SCS_CODIGO, PDA_DET_CODIGO, PDA_UPP_PDT_CODIGO;
 		";
 
