@@ -29,8 +29,6 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Vendedor</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Toneladas</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estatus</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"></th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Intervalos</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Duracion</th>
@@ -38,18 +36,14 @@
                             </tr>
                         </thead>
                         <tbody>
-
-
-
-
-
-                            <?php foreach ($data['page_data'] as $details) {  
+                            
+                            <?php foreach ($data['page_data'] as $details) {
                                 $icon = $details['DCL_VEN_CODIGO'] == '052' ? 'import_export' : 'emoji_transportation';
                                 $iconType = $details['INDICADOR'] == 0 ? '🐔' : '🚛';
-                                ?>
+                            ?>
                                 <tr class="list-odc-style">
                                     <td>
-                                        <a href="<?= base_url() ?>/PedidosPollo/details?id=<?= $details['DCL_NUMERO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&ind=<?=$details['INDICADOR'] ?>" class="text-decoration-none">
+                                        <a href="<?= base_url() ?>/PedidosPollo/details?id=<?= $details['DCL_NUMERO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&ind=<?= $details['INDICADOR'] ?>" class="text-decoration-none">
                                             <div class="d-flex px-2 py-1">
                                                 <div class="p-2 btn btn-light rounded-circle d-flex me-2 m-0">
                                                     <i class="material-icons opacity-10"><?= $iconType ?></i>
@@ -69,38 +63,10 @@
                                         <span class="text-green"><?php echo $details['DCG_PESO'] ?></span>
                                     </td>
 
-                                    <?php switch ($details['DCG_PESADAS']):
+                                    <?php switch ($details['DCL_CERRADO']):
                                         case '1': ?>
                                             <td class="align-middle text-center text-sm">
                                                 <span class="badge badge-sm bg-gradient-success">Cerrado</span>
-                                            </td>
-
-                                            <td class="align-middle text-center">
-                                                <div class="w-100 d-flex justify-content-center">
-
-                                                    <?php if ($details['PDA_TRANF_ID'] <> 0) {   ?>
-                                                        <a class="p-2 btn btn-success rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                        </a>
-                                                    <?php   } else if ($details['INDICADOR'] <> 1 && $details['DCL_VEN_CODIGO'] != '052') { ?>
-                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                        </a>
-                                                    <?php } else if ($details['DCL_VEN_CODIGO'] == '052'  && $details['DCG_IMPORT'] != 1) { ?>
-                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                        </a>
-                                                    <?php } else if ($details['DCL_VEN_CODIGO'] == '052' && $details['DCG_IMPORT'] == 1) { ?>
-                                                        <a data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" class="p-2 btn btn-warning rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                        </a>
-
-                                                    <?php } else { ?>
-                                                        <a data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                        </a>
-                                                    <?php   } ?>
-                                                </div>
                                             </td>
                                             <?php break; ?>
 
@@ -109,38 +75,9 @@
                                             <td class="align-middle text-center text-sm">
                                                 <span class="badge badge-sm bg-gradient-warning">Proceso</span>
                                             </td>
-                                            <td class="align-middle text-center">
-                                                <div class="w-100 d-flex justify-content-center">
-
-                                                    <a class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                        <i class="material-icons opacity-10"><?=  $icon ?></i>
-                                                    </a>
-                                                </div>
-                                            </td>
                                             <?php break; ?>
                                     <?php endswitch ?>
 
-                                    <td class="align-middle text-center">
-                                        <div class="w-100 d-flex justify-content-center">
-
-                                            <?php if ($details['PDA_TRANF_ID'] <> 0  && $details['DCG_SINCRO'] <> 0) { ?>
-                                                <a class="p-2 btn btn-success rounded-circle d-flex  m-0 w-50 justify-content-center btn-sincro" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>">
-                                                    <i class="material-icons opacity-10">sync</i>
-                                                </a>
-                                            <?php } else if ($details['PDA_TRANF_ID'] <> 0  && $details['DCG_SINCRO'] == 0) {  ?>
-                                                <a onclick="sincroGuia(this)" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center btn-sincro" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>">
-                                                    <i class="material-icons opacity-10">sync</i>
-                                                </a>
-
-                                            <?php } else {  ?>
-                                                <a class="p-2 btn btn-success-previo rounded-circle d-flex  m-0 w-50 justify-content-center btn-sincro" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>">
-                                                    <i class="material-icons opacity-10">sync</i>
-                                                </a>
-
-                                            <?php }   ?>
-
-                                        </div>
-                                    </td>
                                     <td class="align-middle text-center">
                                         <span class="text-secondary text-xs font-weight-bold"><?php echo $details['DCL_FECHA'] ?></span>
                                     </td>

@@ -244,7 +244,7 @@ function ticket(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/ticket?id=' + numero + '&tr=' + codigo;
+			var ajaxUrl = base_url + '/PedidosPollo/ticket?id=' + numero + '&vd=' + codigo;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();

@@ -126,7 +126,7 @@ headerAdmin($data); ?>
 
                 </div>
 
-                <?php if ($details['DCG_PESADAS'] !=  1) { ?>
+                <?php if ($details['DCL_CERRADO'] !=  1) { ?>
                     <div class="card-footer text-end d-flex justify-content-end">
                         <button class="btn btn-danger shadow-danger mb-0" onclick="closeCount()"> Cerrar Conteo</button>
                     </div>
@@ -156,7 +156,7 @@ headerAdmin($data); ?>
                                                     <input type="hidden" value="0" id="canxund">
                                                     <input type="hidden" value="0" id="valor">
                                                     <input type="hidden" value="0" id="valor-und">
-                                                    <input type="hidden" value="<?= $details['DCG_PESADAS'] ?>" id="dcg-pesadas">
+                                                    <input type="hidden" value="<?= $details['DCL_CERRADO'] ?>" id="dcg-pesadas">
                                                     <input type="hidden" value="<?= $data['page_ind'] ?>" id="indicadorType">
                                                     <div class="col-6">
                                                         <div class="input-group input-group-static mb-1 ">
@@ -340,7 +340,7 @@ headerAdmin($data); ?>
                                 </a>
                             </div>
 
-                            <?php if ($details['DCG_PESADAS'] != 1) {    ?>
+                            <?php if ($details['DCL_CERRADO'] != 1) {    ?>
                                 <div class="col-6 text-end">
 
 

@@ -48,14 +48,7 @@
 
           <?php if ($_SESSION['userData']['INCLUIR_GUIA']) { ?>
 
-            <li class="nav-item">
-              <a class="nav-link text-white " href="<?php echo base_url() ?>/Canastas">
-                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i class="material-icons opacity-10">checklist_rtl</i>
-                </div>
-                <span class="nav-link-text ms-1">Canastas</span>
-              </a>
-            </li>
+
 
 
             <li class="nav-item mt-3">
@@ -85,15 +78,30 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-white " href="<?php echo base_url() ?>/PedidosPollo/document" id="newDocument">
+              <a class="nav-link text-white position-relative" href="<?php echo base_url() ?>/PedidosPollo/document" id="chicken-module">
                 <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i class="material-icons opacity-10">point_of_sale</i>
+                  <i class="material-icons opacity-10">emoji_transportation</i>
                 </div>
                 <span class="nav-link-text ms-1">Ordenes Pollo</span>
+
+                <div id="chicken-label" class="position-absolute">
+
+                </div>
               </a>
             </li>
 
+            <li class="nav-item">
+              <a class="nav-link text-white position-relative" href="<?php echo base_url() ?>/Transferencia/details" id="transfer">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <i class="material-icons opacity-10">compare_arrows</i>
+                </div>
+                <span class="nav-link-text ms-1">Transferencias</span>
 
+                <div id="transfer-label" class="position-absolute">
+
+                </div>
+              </a>
+            </li>
 
           <?php   } ?>
 
@@ -101,6 +109,15 @@
 
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">CONFIGURACION</h6>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white " href="<?php echo base_url() ?>/Canastas">
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="material-icons opacity-10">checklist_rtl</i>
+            </div>
+            <span class="nav-link-text ms-1">Canastas</span>
+          </a>
         </li>
 
       </ul>

@@ -1636,7 +1636,7 @@ async function cut() {
 function ticketByHeavy(data) {
 	let pdtCodigo = document.getElementById('codigo-pdt').innerText;
 	let dclCodigo = document.getElementById('dpv_numero').value;
-	let traCodigo = document.getElementById('dpv_pvd').value;
+	let code = document.getElementById('dpv_pvd').value;
 
 	Swal.fire({
 		title: "Desea imprimir?",
@@ -1653,7 +1653,7 @@ function ticketByHeavy(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/ticketByHeavy?id=' + dclCodigo + '&vd=' + traCodigo + '&pdt=' + pdtCodigo;
+			var ajaxUrl = base_url + '/PedidosPollo/ticketByHeavy?id=' + dclCodigo + '&vd=' + code + '&pdt=' + pdtCodigo;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();
