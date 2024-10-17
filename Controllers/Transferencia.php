@@ -55,7 +55,7 @@ class Transferencia extends Controllers
 		$data['page_pdc_status'] = !isset($data['page_data'][0]['DCL_ACTIVO']) ? '0' : $data['page_data'][0]['DCL_ACTIVO'];
 		$data['page_clt_codigo'] = !isset($data['page_data'][0]['DCL_CLT_CODIGO']) ? 'S/R' : $data['page_data'][0]['DCL_CLT_CODIGO'];
 		$data['page_canastas'] = $this->model->getCanasta();
-		$data['page_correlative'] = $this->model->correlativeTPDA();
+		$data['page_correlative'] = $this->model->correlativePDAT();
 		$data['page_vendedores'] = $this->model->getSellers();
 
 
@@ -563,7 +563,7 @@ class Transferencia extends Controllers
 
 			
 
-				$insert = $this->model->insertCallTransfer($numero, $tipodoc, $scs, $vnd, '', '', $fecha, $data, '4', $_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallTransfer($numero, $tipodoc, $scs, $vnd, $data, '4', $_SESSION['userData']['OPE_AMC_PESADA']);
 
 
 

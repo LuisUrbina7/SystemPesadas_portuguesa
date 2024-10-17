@@ -666,15 +666,11 @@ class TransferenciaModel extends Mysql
     }
 
 
-    public function insertCallTransfer($numero, $tipodoc, $scs, $vnd, $tdtOrigen, $NumberOrigen, $fecha, $data, $type, $amc)
+    public function insertCallTransfer($numero, $tipodoc, $scs, $vnd, $data, $type,$amc)
     {
+     
+        $procedure = "CALL `TRANSFER_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd', '$data');";
 
-        $procedure = "CALL `IMPORT_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd', '$tdtOrigen', '$NumberOrigen', '$data','$type' );";
-
-
-        dep($procedure);
-
-        die();
 
         $execute = $this->select($procedure);
 
@@ -685,7 +681,7 @@ class TransferenciaModel extends Mysql
             $correlative = '0000000001';
         }
 
-        $selectDetails = $this->getDetailsImport($clt, $correlative, $amc);
+        $selectDetails = $this->getDetailsImport($vnd, $correlative, $amc);
 
         return $selectDetails;
     }
@@ -760,6 +756,9 @@ class TransferenciaModel extends Mysql
                AND DCL_TDT_CODIGO = 'PDA'
              GROUP BY MCL_UPP_PDT_CODIGO; ";
 
+
+        dep($query);
+        die();
 
         $execute = $this->select_all($query);
 

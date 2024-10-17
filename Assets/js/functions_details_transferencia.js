@@ -53,8 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
+/*
 	socket.addEventListener('open', function (event) {
 		socket.send('Hola servidor!');
 	});
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			socket = new WebSocket('ws://192.168.10.181:8080');  // Intenta reconectar
 		}, 5000);  // Espera 5 segundos antes de intentar
 	});
-
+*/
 
 
 
