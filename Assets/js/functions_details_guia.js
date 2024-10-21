@@ -191,10 +191,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	setInterval(hora, 1000);
 
-	//setInterval(getWeight, 500);
+	
 
 
 	eventPressEnter();
+
+
 
 }, false);
 
@@ -364,7 +366,7 @@ function aggRow() {
 
 
 
-	if (amc == 0 || amc == '' || amc == null) {
+	if (amc == 0 || amc == '' || amc == null ) {
 
 		Swal.fire({
 			title: "Error!",
@@ -376,7 +378,7 @@ function aggRow() {
 
 	}
 
-	if (weight == 0 || weight == '' || weight == null) {
+	if (weight == 0 || weight == '' || weight == null || isNaN(weight)) {
 
 		Swal.fire({
 			title: "Error!",
@@ -468,6 +470,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
+			document.getElementById('weight-value-secondary').value='0.00';
 
 			cleanTable();
 			validaSave = 1;
@@ -503,7 +506,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value='0.00';
 			cleanTable();
 			validaSave = 1;
 
@@ -841,7 +844,7 @@ function setInfo(data) {
 
 			document.getElementById('input-und').textContent = 'CJ';
 			document.getElementById('weight-value').value = parseFloat(data.dataset.exiscj.replace(",", ""));
-
+			document.getElementById('weight-value-secondary').value = parseFloat(data.dataset.exisund.replace(",", ""));
 
 			fields.forEach(function (element) {
 				element.style.display = 'none';
@@ -860,19 +863,13 @@ function setInfo(data) {
 			});
 
 			styleFields.forEach(function (element) {
-
 				element.style.border = '1px solid red';
 			});
 
 
 			document.getElementById('manual-label').style.display = 'inline-block';
-
-
 			document.getElementById('weight-value').readOnly = false;
-			document.getElementById('weight-value-secondary').value = 0;
-
-
-
+			
 		} else {
 
 
@@ -1202,19 +1199,22 @@ function updateDetails(event) {
 function closeCount() {
 
 
-	if (indType)
-		validatePresale();
+	let indicador = 0;
 
+	if (indType) {
+		
+		indicador = validatePresale();
+	}
 
 	Swal.fire({
 		title: "Cerrar el conteo?",
-		text: validatePresale() ? " Verificar cantidades, existe un item con monto diferente a lo pesado." : "Presiona sí para continuar!",
+		text:  indicador ? " Verificar cantidades, existe un item con monto diferente a lo pesado." : "Presiona sí para continuar!",
 		icon: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
 		confirmButtonText: "Sí, cerrar!",
-		input: validatePresale() ? 'password' : null,
+		input:  indicador ?  'password' : null,
 		inputPlaceholder: 'Ingresa el número de verificación',
 		inputAttributes: {
 			style: 'color: white;'  
@@ -1468,9 +1468,11 @@ function ignoreHeavy(data) {
 							icon: "success"
 						});
 						data.classList.remove('btn-outline-success');
-						data.classList.add('btn-danger')
+						data.classList.add('btn-danger');
 
 
+
+ 						node.setAttribute('data-omitido',1);
 						setInfoDetails(null);
 					} else {
 
@@ -1763,8 +1765,9 @@ function validatePresale() {
 		let indicator = element.getAttribute('data-und');
 		let exist = parseFloat(element.querySelector(indicator == 'KG' ? '#exis-und' : '#exis-cj').textContent);
 		let heavy = parseFloat(element.querySelector('#exis-pesado').textContent);
+		let omitido = parseFloat(element.getAttribute('data-omitido'));
 
-		if (heavy != exist) {
+		if (heavy != exist && !omitido) {
 
 			let parent = element.closest('a')
 			interator = 1;
@@ -1774,15 +1777,7 @@ function validatePresale() {
 	});
 
 
-
-
-
-
-
 	if (interator) {
-
-
-
 
 		//---------------------------------------------------------------
 		Swal.fire({
@@ -1830,3 +1825,5 @@ function eventPressEnter() {
 		}
 	});
 }
+
+

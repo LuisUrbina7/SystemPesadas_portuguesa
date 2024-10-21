@@ -385,7 +385,7 @@ function aggRow() {
 
 	}
 
-	if (weight == 0 || weight == '' || weight == null) {
+	if (weight == 0 || weight == '' || weight == null || isNaN(weight)) {
 
 		Swal.fire({
 			title: "Error!",
@@ -794,7 +794,8 @@ function setInfo(data) {
 	let showfields = document.querySelectorAll('.show-fields');
 	let disguiseBtn = document.querySelectorAll('.disguise-btn');
 	let styleFields = document.querySelectorAll('.weight');
-	let closed = 0; //parseFloat(document.getElementById('dpv-cerrado').value);
+	let closed =parseFloat(document.getElementById('pcd_cerrado').value);
+	
 	let aptionRow = '';
 
 	/********* ACTIVA BOTON DE BORRA O NO SI UN DOCUMENTO ESTÁ CERRADO ************/

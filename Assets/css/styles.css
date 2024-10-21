@@ -384,3 +384,9 @@
 .bg-autoventa{
   background-color: #16fd2e;
 }
+
+.modal-auto-width{
+  max-width: none;
+  width: auto;
+  display: table;
+}

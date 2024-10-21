@@ -43,13 +43,13 @@
 
 
 
-                            <?php foreach ($data['page_data'] as $details) {  
+                            <?php foreach ($data['page_data'] as $details) {
                                 $icon = $details['DCG_TRA_CODIGO'] == '052' ? 'import_export' : 'emoji_transportation';
                                 $iconType = $details['INDICADOR'] == 0 ? '🐔' : '🚛';
-                                ?>
+                            ?>
                                 <tr class="list-odc-style">
                                     <td>
-                                        <a href="<?= base_url() ?>/DocumentGuia/details?id=<?= $details['DCG_NUMERO'] ?>&tr=<?= $details['DCG_TRA_CODIGO'] ?>&ind=<?=$details['INDICADOR'] ?>" class="text-decoration-none">
+                                        <a href="<?= base_url() ?>/DocumentGuia/details?id=<?= $details['DCG_NUMERO'] ?>&tr=<?= $details['DCG_TRA_CODIGO'] ?>&ind=<?= $details['INDICADOR'] ?>" class="text-decoration-none">
                                             <div class="d-flex px-2 py-1">
                                                 <div class="p-2 btn btn-light rounded-circle d-flex me-2 m-0">
                                                     <i class="material-icons opacity-10"><?= $iconType ?></i>
@@ -72,7 +72,7 @@
                                     <?php switch ($details['DCG_PESADAS']):
                                         case '1': ?>
                                             <td class="align-middle text-center text-sm">
-                                                <span class="badge badge-sm bg-gradient-success">Cerrado</span>
+                                                <span class="badge badge-sm bg-gradient-success span-active-trans">Cerrado</span>
                                             </td>
 
                                             <td class="align-middle text-center">
@@ -80,24 +80,37 @@
 
                                                     <?php if ($details['PDA_TRANF_ID'] <> 0) {   ?>
                                                         <a class="p-2 btn btn-success rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                            <i class="material-icons opacity-10"><?= $icon ?></i>
                                                         </a>
                                                     <?php   } else if ($details['INDICADOR'] <> 1 && $details['DCG_TRA_CODIGO'] != '052') { ?>
-                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center btn-active-trans">
+                                                            <i class="material-icons opacity-10"><?= $icon ?></i>
                                                         </a>
+
+                                                        <a onclick="openGuia(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-0 btn align-items-center rounded-circle d-flex  m-0 w-50 justify-content-center btn-open-guia">
+                                                            <i class="material-icons opacity-10">lock_open</i>
+                                                        </a>
+
                                                     <?php } else if ($details['DCG_TRA_CODIGO'] == '052'  && $details['DCG_IMPORT'] != 1) { ?>
-                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                        <a onclick="activeTrans(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center btn-active-trans">
+                                                            <i class="material-icons opacity-10"><?= $icon ?></i>
+                                                        </a>
+
+                                                        <a onclick="openGuia(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-0 btn align-items-center rounded-circle d-flex  m-0 w-50 justify-content-center btn-open-guia">
+                                                            <i class="material-icons opacity-10">lock_open</i>
                                                         </a>
                                                     <?php } else if ($details['DCG_TRA_CODIGO'] == '052' && $details['DCG_IMPORT'] == 1) { ?>
                                                         <a data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-warning rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                            <i class="material-icons opacity-10"><?= $icon ?></i>
                                                         </a>
 
                                                     <?php } else { ?>
                                                         <a data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                            <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                            <i class="material-icons opacity-10"><?= $icon ?></i>
+                                                        </a>
+
+                                                        <a onclick="openGuia(this)" data-number="<?= $details['DCG_NUMERO'] ?>" data-det="<?= $details['DCG_TRA_CODIGO'] ?>" class="p-0 btn align-items-center rounded-circle d-flex  m-0 w-50 justify-content-center btn-open-guia">
+                                                            <i class="material-icons opacity-10">lock_open</i>
                                                         </a>
                                                     <?php   } ?>
                                                 </div>
@@ -113,7 +126,7 @@
                                                 <div class="w-100 d-flex justify-content-center">
 
                                                     <a class="p-2 btn btn-light rounded-circle d-flex  m-0 w-50 justify-content-center">
-                                                        <i class="material-icons opacity-10"><?=  $icon ?></i>
+                                                        <i class="material-icons opacity-10"><?= $icon ?></i>
                                                     </a>
                                                 </div>
                                             </td>

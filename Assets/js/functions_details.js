@@ -358,7 +358,7 @@ function aggRow() {
 	let json = [];
 
 
-	if (weight == 0 || weight == '' || weight == null) {
+	if (weight == 0 || weight == '' || weight == null || isNaN(weight)) {
 
 		Swal.fire({
 			title: "Error!",
@@ -470,7 +470,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value='0.00';
 			cleanTable();
 			validaSave = 1;
 			//------------- RECALCULO DE PESADO -----------------
@@ -507,7 +507,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value='0.00';
 			cleanTable();
 
 			validaSave = 1;
@@ -874,7 +874,7 @@ function setInfo(data) {
 
 			document.getElementById('input-und').textContent = 'CJ';
 			document.getElementById('weight-value').value = parseFloat(data.dataset.exiscj.replace(",", ""));
-
+			document.getElementById('weight-value-secondary').value = parseFloat(data.dataset.exisund.replace(",", ""));
 			fields.forEach(function (element) {
 				element.style.display = 'none';
 
@@ -898,10 +898,8 @@ function setInfo(data) {
 
 
 			document.getElementById('manual-label').style.display = 'inline-block';
-
-
 			document.getElementById('weight-value').readOnly = false;
-			document.getElementById('weight-value-secondary').value = 0;
+			//document.getElementById('weight-value-secondary').value = 0;
 
 
 

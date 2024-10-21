@@ -363,7 +363,7 @@ function aggRow() {
 
 
 
-	if (amc == 0 || amc == '' || amc == null) {
+	if (amc == 0 || amc == '' || amc == null ) {
 
 		Swal.fire({
 			title: "Error!",
@@ -375,7 +375,7 @@ function aggRow() {
 
 	}
 
-	if (weight == 0 || weight == '' || weight == null) {
+	if (weight == 0 || weight == '' || weight == null || isNaN(weight)) {
 
 		Swal.fire({
 			title: "Error!",
@@ -467,7 +467,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value='0.00';
 			cleanTable();
 			validaSave = 1;
 
@@ -502,7 +502,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value='0.00';
 			cleanTable();
 			validaSave = 1;
 
@@ -791,7 +791,7 @@ function setInfo(data) {
 
 			document.getElementById('input-und').textContent = 'CJ';
 			document.getElementById('weight-value').value = parseFloat(data.dataset.exiscj.replace(",", ""));
-
+			document.getElementById('weight-value-secondary').value = parseFloat(data.dataset.exisund.replace(",", ""));
 
 			fields.forEach(function (element) {
 				element.style.display = 'none';
@@ -816,10 +816,8 @@ function setInfo(data) {
 
 
 			document.getElementById('manual-label').style.display = 'inline-block';
-
-
 			document.getElementById('weight-value').readOnly = false;
-			document.getElementById('weight-value-secondary').value = 0;
+			
 
 
 
@@ -1152,6 +1150,7 @@ function updateDetails(event) {
 function closeCount() {
 
 	let indicador = 0;
+
 
 
 	if (indType) {
@@ -1712,6 +1711,64 @@ function validatePresale() {
 	var interator = 0;
 	let elemets = document.querySelectorAll('.list-group a');
 
+	let details = new FormData();
+			
+	let dpvNumber = document.getElementById('dpv_numero').value;
+	let dpvProvider = document.getElementById('dpv_pvd').value;
+
+	details.append('NUMBER', dpvNumber);
+
+	details.append('PROVIDER', dpvProvider);
+
+	var request = (window.XMLHttpRequest) ?
+		new XMLHttpRequest() :
+		new ActiveXObject('Microsoft.XMLHTTP');
+
+	var ajaxUrl = base_url + '/PedidosPollo/ValidationOrders';
+
+	request.open("POST", ajaxUrl, true);
+	request.send(details);
+	request.onreadystatechange = function () {
+
+		if (request.readyState != 4) return;
+		if (request.status == 200) {
+			var objData = JSON.parse(request.responseText);
+
+			if (objData.status) {
+
+
+				Swal.fire({
+					title: "Excelente!",
+					text: objData.msg,
+					icon: "success"
+				});
+
+				add();
+				window.location.href = base_url + '/PedidosPollo/document';
+			} else {
+
+				Swal.fire({
+					title: "Error!",
+					text: objData.msg,
+					icon: "error"
+				});
+			};
+
+
+		} else {
+			Swal.fire({
+				title: "Error!",
+				text: 'Conexion.',
+				icon: "error"
+			});
+		}
+
+	}
+
+
+
+
+
 
 	elemets.forEach(element => {
 		let indicator = element.getAttribute('data-und');
@@ -1726,12 +1783,6 @@ function validatePresale() {
 
 		}
 	});
-
-
-
-
-
-
 
 
 	if (interator) {

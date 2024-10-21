@@ -259,7 +259,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                                                     <input type="hidden" value="<?= $data['page_clt_codigo'] ?>" id="pdc_clt">
                                                     <input type="hidden" value="<?= !empty($data['page_data'][0]['DCL_NUMERO']) ? $data['page_data'][0]['DCL_NUMERO'] : 1 ?>" id="correlative">
                                                     <input type="hidden" value="<?= $data['page_pdc_status'] ?>" id="pdc_status">
-
+                                                    <input type="hidden" value="<?= $conteo ?>" id="pcd_cerrado">
                                                     <input type="hidden" value="FAV" id="pdc_tdt">
                                                     <input type="hidden" value="0" id="canxund">
                                                     <input type="hidden" value="0" id="valor">

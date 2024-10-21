@@ -1,11 +1,11 @@
 <?php
-const BASE_URL = "http://localhost/SystemPesadas_portuguesa";
+const BASE_URL = "http://localhost/Pesadas_estables/SystemPesadas_portuguesa";
 
 //Zona horaria
 date_default_timezone_set('America/Caracas');
 
 //Datos de conexión a Base de Datos
-const DB_HOST = "localhost:3308";
+const DB_HOST = "localhost:3306";
 const DB_NAME = "feriapollo";
 const DB_USER = "sistemas";
 const DB_PASSWORD = 'adn';

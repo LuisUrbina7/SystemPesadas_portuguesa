@@ -53,18 +53,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-/*
-	socket.addEventListener('open', function (event) {
-		socket.send('Hola servidor!');
-	});
-
-	socket.addEventListener('close', function (event) {
-		console.log('Conexión cerrada, intentando reconectar...');
-		setTimeout(function () {
-			socket = new WebSocket('ws://192.168.10.181:8080');  // Intenta reconectar
-		}, 5000);  // Espera 5 segundos antes de intentar
-	});
-*/
+	/*
+		socket.addEventListener('open', function (event) {
+			socket.send('Hola servidor!');
+		});
+	
+		socket.addEventListener('close', function (event) {
+			console.log('Conexión cerrada, intentando reconectar...');
+			setTimeout(function () {
+				socket = new WebSocket('ws://192.168.10.181:8080');  // Intenta reconectar
+			}, 5000);  // Espera 5 segundos antes de intentar
+		});
+	*/
 
 
 
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	eventPressEnter();
 
-
+	clikRowTable();
 }, false);
 
 
@@ -295,7 +295,7 @@ function aggRow() {
 	let weightSecondary = parseFloat(document.getElementById('weight-value-secondary').value) == '' || isNaN(parseFloat(document.getElementById('weight-value-secondary').value)) ? 0 : parseFloat(document.getElementById('weight-value-secondary').value);
 
 
-	console.log(weightSecondary);
+	console.log(weight + 'ENTRO VACIO');
 
 
 	if (unit == 0) {
@@ -326,13 +326,13 @@ function aggRow() {
 
 		weight = weight + weightSecondary;
 
-		let divisor = canxund  || 1;
+		let divisor = canxund || 1;
 
 		let temp = weight / divisor;
 
 		reference = (Math.floor(temp)).toFixed(2);
 
-		console.log(weight + 'divo  '+ divisor);
+		console.log(weight + 'divo  ' + divisor);
 
 		referenceKg = ((temp - Math.floor(temp)) * divisor).toFixed(2);
 
@@ -347,8 +347,8 @@ function aggRow() {
 	let arrival = '0000-00-00 00:00:00';
 
 
-	let tk = 'OTROS';
-	let ta = 'OTROS';
+	let tk = 'AUTOVENTA';
+	let ta = 'AUTOVENTA';
 
 	let equivalent = 0;
 	let extraAmount = 0;
@@ -369,7 +369,7 @@ function aggRow() {
 
 	}
 
-	if (weight == 0 || weight == '' || weight == null) {
+	if (weight == 0 || weight == '' || weight == null || isNaN(weight)) {
 
 		Swal.fire({
 			title: "Error!",
@@ -467,6 +467,7 @@ function aggRow() {
 
 			//Aqui es donde se agrega
 			document.getElementById('weight-value').value = '';
+			document.getElementById('weight-value-secondary').value = '0.00';
 			document.getElementById('weight-value').focus();
 
 			cleanTable();
@@ -504,7 +505,7 @@ function aggRow() {
 			add();
 
 			document.getElementById('weight-value').value = '0.00';
-
+			document.getElementById('weight-value-secondary').value = '0.00';
 			cleanTable();
 			validaSave = 1;
 
@@ -779,7 +780,7 @@ function setInfo(data) {
 	let showfields = document.querySelectorAll('.show-fields');
 	let disguiseBtn = document.querySelectorAll('.disguise-btn');
 	let styleFields = document.querySelectorAll('.weight');
-	let closed = 0; //parseFloat(document.getElementById('dpv-cerrado').value);
+	let closed = parseFloat(document.getElementById('pcd_cerrado').value);
 	let aptionRow = '';
 
 	/********* ACTIVA BOTON DE BORRA O NO SI UN DOCUMENTO ESTÁ CERRADO ************/
@@ -1354,8 +1355,8 @@ async function aggProducts() {
 		populateTable(data);
 		initializeDataTable();
 
-		var miModal = new bootstrap.Modal(document.getElementById('modalProducts'));
-		miModal.show();
+		//var miModal = new bootstrap.Modal(document.getElementById('modalProducts'));
+		//miModal.show();
 
 
 	} catch (error) {
@@ -1379,12 +1380,12 @@ function populateTable(products) {
 					<input class="form-check-input checkProductsNew" type="checkbox" value="" id="checkProductsNew" onclick="searchProduct(this)" data-code="${product.CODIGO}">
 				</div> 
 			</td>
-			<td class="font-weight-light p-1 text-sm">${product.CODIGO}</td>
-			<td class="font-weight-light p-1 text-sm">${product.DESCRIPCION}</td>
-			<td class="font-weight-light p-1 text-sm">${product.PRECIO}</td>
-			<td class="font-weight-light p-1 text-sm">${product.TIV}</td>
-			<td class="font-weight-light p-1 text-sm">${product.EXIS}</td>
-			<td class="font-weight-light p-1 text-sm">${product.LISTA}
+			<td class="font-weight-light p-1">${product.CODIGO}</td>
+			<td class="font-weight-light p-1">${product.DESCRIPCION}</td>
+			<td class="font-weight-light p-1">${product.PRECIO}</td>
+			<td class="font-weight-light p-1">${product.TIV}</td>
+			<td class="font-weight-light p-1">${product.EXIS}</td>
+			<td class="font-weight-light p-1">${product.LISTA}
 				<input type="hidden" class="form-control form-control-sm" data-pdt ="${product.CODIGO}"  data-canxund="${product.CAPACIDAD}" data-und="${product.UND}" data-costot="${product.COSTOT}" data-costop="${product.COSTOP}" data-list="${product.LISTA}" data-poriva="${product.PORIVA}"  data-tiv="${product.TIV}" data-metcos="${product.METCOS}" data-description="${product.DESCRIPCION}" data-costomer="${product.COSTOMER}" data-costou="${product.COSTOU}"  data-base="${product.BASE}" data-hti="${product.HTI}" >
 			</td>
 		</tr>
@@ -1532,7 +1533,7 @@ function setStyleWeight(codigo, cantidad) {
 
 	let anchors = document.querySelectorAll('.list-group a');
 	let cantidadNew = parseFloat(cantidad).toFixed(2);
-	console.log(cantidad);
+
 
 
 	anchors.forEach(anchor => {
@@ -2616,4 +2617,24 @@ function recalculationHeavy() {
 
 	setStyleWeight(pdtCodigo, weightTotal);
 
+}
+
+function clikRowTable() {
+
+	var table = document.getElementById('tableProducts');
+
+
+	table.addEventListener('click', function (event) {
+		var target = event.target;
+		var row = target.closest('tr');
+
+		if (row && row.parentNode.tagName === 'TBODY') { // Asegura que el clic sea en una fila dentro del cuerpo de la tabla
+			var checkbox = row.querySelector('input[type="checkbox"]'); // Selecciona el checkbox dentro de la fila
+			row.classList.add('details-odc-style');
+			console.log(row);
+			if (checkbox) {
+				checkbox.checked = !checkbox.checked; // Cambia el estado del checkbox
+			}
+		}
+	});
 }

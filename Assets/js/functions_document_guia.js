@@ -388,4 +388,101 @@ function ticketGeneral(data) {
 
 
 
+async function openGuia(data) {
+
+
+	const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+			confirmButton: 'btn btn-success',
+			cancelButton: 'btn btn-danger'
+		},
+		buttonsStyling: false
+	});
+
+	try {
+		const result = await swalWithBootstrapButtons.fire({
+			title: 'Por favor ingresa clave administrador. Para abrir la guia.',
+			html: '<input type="password" id="swal-input" class="swal2-input" placeholder="Clave">',
+			focusConfirm: false,
+			preConfirm: () => {
+				return document.getElementById('swal-input').value;
+			}
+		});
+
+		if (result.isConfirmed) {
+			const password = result.value;
+
+			if (password !== '2525') {
+				Swal.fire("Atención", "Clave incorrecta.", "error");
+				return;
+			}
+
+
+			let guia = data.getAttribute('data-number');
+			let trans = data.getAttribute('data-det');
+
+
+			const ajaxUrl = base_url + '/DocumentGuia/openGuia?id=' + guia + '&tr=' + trans;
+			const response = await fetch(ajaxUrl);
+
+			if (!response.ok) {
+				throw new Error('Error en la solicitud.');
+			}
+
+			const objData = await response.json();
+
+
+			if (objData.status) {
+				Swal.fire({
+					position: "center",
+					icon: "success",
+					title: objData.msg,
+					showConfirmButton: false,
+					timer: 1000
+				});
+
+				let btnOpenGuia = data.parentNode.parentNode.parentNode.cells[4].querySelector('.btn-open-guia');
+				let spnActiveTrans = data.parentNode.parentNode.parentNode.cells[3].querySelector('.span-active-trans');
+				let btnActiveTrans = data.parentNode.parentNode.parentNode.cells[4].querySelector('.btn-active-trans');
+
+
+
+				if (btnOpenGuia) {
+					btnOpenGuia.classList.add('d-none');
+				}
+
+				if (btnActiveTrans) {
+					btnActiveTrans.style.pointerEvents = "none";
+				}
+
+				if (spnActiveTrans) {
+					spnActiveTrans.textContent = 'PROCESO';
+					spnActiveTrans.classList.remove('bg-gradient-success');
+					spnActiveTrans.classList.add('bg-gradient-warning');
+				}
+
+
+			} else {
+				Swal.fire({
+					position: "center",
+					icon: "error",
+					title: objData.msg,
+					showConfirmButton: false,
+					timer: 1000
+				});
+			}
+		}
+	} catch (error) {
+		console.error('Error en la solicitud:', error);
+		Swal.fire({
+			position: "center",
+			icon: "error",
+			title: objData.msg,
+			showConfirmButton: false,
+			timer: 1000
+		});
+	}
+
+
+}
 

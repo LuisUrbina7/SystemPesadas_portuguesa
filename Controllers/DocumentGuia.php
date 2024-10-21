@@ -975,4 +975,71 @@ class DocumentGuia extends Controllers
 			die();
 		}
 	}
+
+
+	function openGuia()
+	{
+		$numero = $_GET['id'];
+		$trans = $_GET['tr'];
+
+		try {
+
+			$search = $this->model->updateOpenGuia($numero, $trans);
+
+			if ($search) {
+				$arrResponse = array('status' => true, 'msg' => 'Se abrió el conteo!');
+				echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+				die();
+			} else {
+
+				$arrResponse = array('status' => false, 'msg' => 'Error, problemas en la actualización.');
+				echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+
+				die();
+			}
+		} catch (Exception $e) {
+
+			$arrResponse = array('status' => false, 'msg' => 'Error, por favor revisar los datos ' . $e);
+			echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+
+			die();
+		}
+	}
+
+
+
+	public function ValidationOrders()
+	{
+
+		if ($_POST) {
+			$numero = $_POST['NUMBER'];
+			$transportista = $_POST['PROVIDER'];
+
+			try {
+
+				$validate = $this->model->validateGuia($numero, $transportista);
+
+				if ($validate) {
+
+					$arrResponse = array('status' => true, 'msg' => 'Cerrado correctamente.');
+
+					echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+					die();
+				} else {
+
+
+					$arrResponse = array('status' => false, 'msg' => 'Error, faltan elementos por pesar para cerrar guia.');
+
+					echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+					die();
+				}
+			} catch (Exception $e) {
+
+				$arrResponse = array('status' => false, 'msg' => 'Error, por favor revisar los datos ' . $e);
+				echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
+
+				die();
+			}
+		}
+	}
 }
