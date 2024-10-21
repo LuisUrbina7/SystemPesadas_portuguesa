@@ -171,7 +171,7 @@ class PedidosPolloModel extends Mysql
 	public function insertDetails($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta)
 	{
 		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
-		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'2');";
+		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'4');";
 		$result = $this->insert($insert, [$numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $user]);
 
 		return $result;
@@ -180,7 +180,7 @@ class PedidosPolloModel extends Mysql
 	public function insertSkip($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $motivo)
 	{
 		$user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
-		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO,PDA_MOTIVO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'2',?);";
+		$insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO,PDA_MOTIVO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'4',?);";
 
 
 		$result = $this->insert($insert, [$numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $user, $motivo]);

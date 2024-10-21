@@ -1,20 +1,12 @@
 <?php
 
-class TransferenciaModel extends Mysql
+class AutoVentaModel extends Mysql
 {
 
 
     public function __construct()
     {
         parent::__construct();
-    }
-
-    public function getVentas()
-    {
-
-        $sql = "";
-        $request = $this->select_all($sql);
-        return $request;
     }
 
 
@@ -30,15 +22,18 @@ class TransferenciaModel extends Mysql
                             DCL_FECHA,
                             DCL_TDT_CODIGO,
                             DCL_ACTIVO,
-                            DCL_SCS_CODIGO
+                            DCL_SCS_CODIGO,
+                            DCL_VEN_CODIGO,
+                            VEN_NOMBRE
                             FROM ADN_DOCCLI 
                             JOIN  ADN_CLIENTES ON DCL_CLT_CODIGO = CLT_CODIGO 
+                            JOIN ADN_VENDEDORES ON DCL_VEN_CODIGO = VEN_CODIGO
                             LEFT JOIN ADN_MOVCLI ON MCL_DCL_NUMERO = DCL_NUMERO
                                         AND MCL_DCL_TDT_CODIGO = DCL_TDT_CODIGO
                             LEFT JOIN ADN_UNDAGRU ON MCL_UPP_PDT_CODIGO = UGR_PDT_CODIGO AND MCL_UPP_UND_ID = UGR_UND_ID  
                             JOIN ADN_PRODUCTOS ON MCL_UPP_PDT_CODIGO =  PDT_CODIGO
                           
-                            AND DCL_TDT_CODIGO = 'PDA'
+                            AND DCL_TDT_CODIGO = 'PDAT'
                             GROUP BY DCL_CLT_CODIGO, DCL_NUMERO, DCL_SCS_CODIGO
                             ORDER BY DCL_FECHA DESC;";
 
@@ -90,24 +85,7 @@ class TransferenciaModel extends Mysql
         return $select;
     }
 
-    public function copy($id, $pv)
-    {
-
-        $queryDoc = "INSERT INTO `pesadas`.`adn_docpro` (`DPV_NUMERO`,`DPV_PVD_CODIGO`,`DPV_SCS_CODIGO`,`DPV_TDT_CODIGO`,`DPV_FECHA`,`DPV_NETO`,`DPV_BASEG`,`DPV_BASER`,`DPV_EXENTO`,`DPV_ACTIVO`,`DPV_STD_ESTADO`,`DPV_PORDCTO`,`DPV_FECHAHORA`,`DPV_HORA`,`DPV_NUMFIS`,`DPV_PLAZO`,`DPV_CONDICION`,`DPV_IVAG`,`DPV_IVAR`,`DPV_ID`,`DPV_ORDEN`,`DPV_DESCRIPCION`,`DPV_PORCENTAJE`,`DPV_TIPTRA`,`DPV_FACAFE`,`DPV_TIPOINV`,`DPV_CXP`,`DPV_BRUTO`,`DPV_FECHAVEN`,`DPV_NUMORIGEN`,`DPV_PRORRATEA`,`DPV_NUMAUX`,`DPV_VALORCAM`,`DPV_BRUTOUSD`,`DPV_NETOUSD`,`DPV_BASEGUSD`,`DPV_BASERUSD`,`DPV_BASESUSD`,`DPV_EXENTOUSD`,`DPV_IVAGUSD`,`DPV_IVARUSD`,`DPV_IVASUSD`,`DPV_VALORCAM2`,`DPV_MONEDA`,`DPV_IGTF`,`DPV_COMPENSACION`)
-            SELECT `DPV_NUMERO`,`DPV_PVD_CODIGO`,`DPV_SCS_CODIGO`,`DPV_TDT_CODIGO`,`DPV_FECHA`,`DPV_NETO`,`DPV_BASEG`,`DPV_BASER`,`DPV_EXENTO`,`DPV_ACTIVO`,`DPV_STD_ESTADO`,`DPV_PORDCTO`,`DPV_FECHAHORA`,`DPV_HORA`,`DPV_NUMFIS`,`DPV_PLAZO`,`DPV_CONDICION`,`DPV_IVAG`,`DPV_IVAR`,`DPV_ID`,`DPV_ORDEN`,`DPV_DESCRIPCION`,`DPV_PORCENTAJE`,`DPV_TIPTRA`,`DPV_FACAFE`,`DPV_TIPOINV`,`DPV_CXP`,`DPV_BRUTO`,`DPV_FECHAVEN`,`DPV_NUMORIGEN`,`DPV_PRORRATEA`,`DPV_NUMAUX`,`DPV_VALORCAM`,`DPV_BRUTOUSD`,`DPV_NETOUSD`,`DPV_BASEGUSD`,`DPV_BASERUSD`,`DPV_BASESUSD`,`DPV_EXENTOUSD`,`DPV_IVAGUSD`,`DPV_IVARUSD`,`DPV_IVASUSD`,`DPV_VALORCAM2`,`DPV_MONEDA`,`DPV_IGTF`,DPV_COMPENSACION FROM ADN_DOCPRO WHERE DPV_TDT_CODIGO = 'PDA' AND DPV_ACTIVO = '1' AND DPV_NUMERO = '$id'; AND DPV_PVD_CODIGO = '$pv'";
-
-        $queryMov = "INSERT INTO `pesadas`.`adn_movpro` (`MPR_ID`,`MPR_DPV_NUMERO`,`MPR_AMC_CODIGO`,`MPR_DPV_PVD_CODIGO`,`MPR_DPV_SCS_CODIGO`,`MPR_DPV_TDT_CODIGO`,`MPR_UPP_PDT_CODIGO`,`MPR_UPP_UND_ID`,`MPR_CTR_CODIGO`,`MPR_CANTIDAD`,`MPR_COSTOT`,`MPR_COSTOP`,`MPR_FISICO`,`MPR_LOGICO`,`MPR_CONTABLE`,`MPR_ACTIVO`,`MPR_PORDCTO`,`MPR_CANTXUND`,`MPR_PORIVA`,`MPR_TIVACOD`,`MPR_HTI_ID`,`MPR_SALDOV`,`MPR_LOTE`,`MPR_FECHALOTE`,`MPR_PRECIOLOTE`,`MPR_DESCDCTO`,`MPR_COSTOBRUTO`,`MPR_PORDESC1`,`MPR_DESCRI`,`MPR_TIPCOSANT`,`MPR_COSANT`,`MPR_NUMORG`,`MPR_TIPOORG`,`MPR_EXPORT`,`MPR_CANTAUX`,`MPR_DPV_TIPTRA`,`MPR_COSTOUSD`,`MPR_AMPLIO`,`MPR_VALORCAM`,`MPR_PIEZAS`,`MPR_CANTRECIBIDA`,`MPR_COSTOTUSD`,`MPR_FECHAVEN`)
-        SELECT `MPR_ID`,`MPR_DPV_NUMERO`,`MPR_AMC_CODIGO`,`MPR_DPV_PVD_CODIGO`,`MPR_DPV_SCS_CODIGO`,`MPR_DPV_TDT_CODIGO`,`MPR_UPP_PDT_CODIGO`,`MPR_UPP_UND_ID`,`MPR_CTR_CODIGO`,`MPR_CANTIDAD`,`MPR_COSTOT`,`MPR_COSTOP`,`MPR_FISICO`,`MPR_LOGICO`,`MPR_CONTABLE`,`MPR_ACTIVO`,`MPR_PORDCTO`,`MPR_CANTXUND`,`MPR_PORIVA`,`MPR_TIVACOD`,`MPR_HTI_ID`,`MPR_SALDOV`,`MPR_LOTE`,`MPR_FECHALOTE`,`MPR_PRECIOLOTE`,`MPR_DESCDCTO`,`MPR_COSTOBRUTO`,`MPR_PORDESC1`,`MPR_DESCRI`,`MPR_TIPCOSANT`,`MPR_COSANT`,`MPR_NUMORG`,`MPR_TIPOORG`,`MPR_EXPORT`,`MPR_CANTAUX`,`MPR_DPV_TIPTRA`,`MPR_COSTOUSD`,`MPR_AMPLIO`,`MPR_VALORCAM`,`MPR_PIEZAS`,`MPR_CANTRECIBIDA`,`MPR_COSTOTUSD`,`MPR_FECHAVEN` FROM ADN_MOVPRO WHERE MPR_DPV_NUMERO = '$id' AND MPR_DPV_PVD_CODIGO = '$pv' AND MPR_DPV_TDT_CODIGO = 'PDA' AND MPR_ACTIVO = '1';";
-
-
-
-        $resultDoc = $this->select($queryDoc);
-        $resultMov = $this->select($queryMov);
-
-
-        return $resultDoc;
-    }
-
+  
 
     public function insertDetails($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta)
     {
@@ -127,7 +105,7 @@ class TransferenciaModel extends Mysql
     {
 
         $user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
-        $insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO,PDA_MOTIVO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'3',?);";
+        $insert = "INSERT IGNORE INTO `adn_pesadas` (`ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`,PDA_AMC_DESTINO, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`,`PDA_CANXUND`, `PDA_CANTIDAD`, PDA_CANASTA_TIPO,`PDA_CANASTA`, `PDA_EXTRA`, `PDA_UBICA`, PDA_FECHA, `PDA_INICIO`, `PDA_FIN`, PDA_LLEGADA , PDA_TK , PDA_TA ,`PDA_USUARIO`,PDA_TIPO,PDA_MOTIVO) VALUES (NULL,?, ?,?, ?, ?,?, ?,?,?,?, ?, ?, ?, ?  ,?, ?,?,?,?, ?,'5',?);";
         $result = $this->insert($insert, [$numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $correlative, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $user, $motivo]);
         return $result;
     }
@@ -159,9 +137,10 @@ class TransferenciaModel extends Mysql
     {
 
 
-        $query = "SELECT `ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`, `PDA_AMC_DESTINO`, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`, `PDA_CANXUND`, `PDA_CANTIDAD`, `PDA_CANASTA_TIPO`, `PDA_CANASTA`, ROUND( `PDA_EXTRA`,2) AS PDA_EXTRA, `PDA_UBICA`, `PDA_FECHA`, `PDA_INICIO`, `PDA_FIN`, `PDA_LLEGADA`, `PDA_TK`, `PDA_TA`, `PDA_TRANF_ID`, `PDA_USUARIO`, `PDA_TIPO`,PDA_MOTIVO FROM adn_pesadas WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$cliente' AND PDA_UPP_PDT_CODIGO = '$sku' AND PDA_TIPO = '3' order by ID ASC";
+        $query = "SELECT `ID`, `PDA_NUMERO`, `PDA_AMC_ORIGEN`, `PDA_AMC_DESTINO`, `PDA_SCS_CODIGO`, `PDA_UPP_PDT_CODIGO`, `PDA_DET_CODIGO`, `PDA_UPP_UND_ID`, `PDA_CANXUND`, `PDA_CANTIDAD`, `PDA_CANASTA_TIPO`, `PDA_CANASTA`, ROUND( `PDA_EXTRA`,2) AS PDA_EXTRA, `PDA_UBICA`, `PDA_FECHA`, `PDA_INICIO`, `PDA_FIN`, `PDA_LLEGADA`, `PDA_TK`, `PDA_TA`, `PDA_TRANF_ID`, `PDA_USUARIO`, `PDA_TIPO`,PDA_MOTIVO FROM adn_pesadas WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$cliente' AND PDA_UPP_PDT_CODIGO = '$sku' AND PDA_TIPO = '5' order by ID ASC";
 
 
+    
         $select = $this->select_all($query);
 
         return $select;
@@ -194,7 +173,7 @@ class TransferenciaModel extends Mysql
     public function getDetailsToEdit($numero, $proveedor)
     {
 
-        $query = "SELECT PDA_NUMERO,PDA_AMC_ORIGEN,PDA_AMC_DESTINO,PDA_SCS_CODIGO,PDA_DET_CODIGO,PDA_UPP_PDT_CODIGO,PDA_UPP_UND_ID, SUM(PDA_CANTIDAD) AS PDA_CANTIDAD  FROM adn_pesadas WHERE PDA_AMC_ORIGEN = '001' AND PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_TIPO = '1' GROUP BY PDA_UPP_PDT_CODIGO;";
+        $query = "SELECT PDA_NUMERO,PDA_AMC_ORIGEN,PDA_AMC_DESTINO,PDA_SCS_CODIGO,PDA_DET_CODIGO,PDA_UPP_PDT_CODIGO,PDA_UPP_UND_ID, SUM(PDA_CANTIDAD) AS PDA_CANTIDAD  FROM adn_pesadas WHERE PDA_AMC_ORIGEN = '001' AND PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$proveedor' AND PDA_TIPO = '5' GROUP BY PDA_UPP_PDT_CODIGO;";
 
 
         $result = $this->select_all($query);
@@ -262,7 +241,7 @@ class TransferenciaModel extends Mysql
             SELECT PDA_NUMERO AS NUMERO, PDA_DET_CODIGO AS DET, 
             ROW_NUMBER() OVER (ORDER BY PDA_UPP_PDT_CODIGO DESC) AS CONTEO  
             FROM ADN_PESADAS
-            WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$clt' AND PDA_TIPO = '3'
+            WHERE PDA_NUMERO = '$numero' AND PDA_DET_CODIGO = '$clt' AND PDA_TIPO = '5'
             GROUP BY PDA_UPP_PDT_CODIGO LIMIT 1
         ) AS PESADAS
         JOIN (
@@ -274,7 +253,7 @@ class TransferenciaModel extends Mysql
                 JOIN ADN_DOCCLI ON MCL_DCL_NUMERO = DCL_NUMERO AND MCL_DCL_SCS_CODIGO = DCL_SCS_CODIGO AND MCL_DCL_TDT_CODIGO = DCL_TDT_CODIGO AND MCL_DCL_TIPTRA = DCL_TIPTRA
                 
                 WHERE DCL_NUMERO = '$numero' AND DCL_CLT_CODIGO = '$clt'
-                AND DCL_TDT_CODIGO = 'PDA'
+                AND DCL_TDT_CODIGO = 'PDAT'
                 GROUP BY MCL_UPP_PDT_CODIGO
                 
             ) AS DOCUMENTOS
@@ -386,7 +365,7 @@ class TransferenciaModel extends Mysql
     {
 
         $query = "SELECT
-            'PDA' AS TIPO,
+            'PDAT' AS TIPO,
             PDT_CODIGO AS CODIGO,
             PDT_DESCRIPCION AS DESCRIPCION, 
             IFNULL(UGR_UND_ID,'') AS UND,
@@ -620,9 +599,9 @@ class TransferenciaModel extends Mysql
     public function correlativePDAT()
     {
 
-        $query = "SELECT IFNULL(LPAD( CAST(MAX(DIN_NUMERO) AS UNSIGNED)+1,20,'0'),'00000000000000000001') AS CORRELATIVO FROM `ADN_DOCINV`
- WHERE DIN_TDT_CODIGO = 'PDAT' ORDER BY DIN_NUMERO DESC LIMIT 1;";
-
+        $query = "SELECT IFNULL(LPAD( CAST(MAX(DCL_NUMERO) AS UNSIGNED)+1,10,'0'),'0000000001') AS CORRELATIVO FROM `ADN_DOCCLI`
+        WHERE DCL_TDT_CODIGO = 'PDAT' ORDER BY DCL_NUMERO DESC LIMIT 1;";
+       
         $execute = $this->select($query);
 
         $correlativo = !isset($execute['CORRELATIVO']) ? '0001' : $execute['CORRELATIVO'];
@@ -666,10 +645,10 @@ class TransferenciaModel extends Mysql
     }
 
 
-    public function insertCallTransfer($numero, $tipodoc, $scs, $vnd, $data, $type,$amc)
+    public function insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, $type, $amc)
     {
      
-        $procedure = "CALL `TRANSFER_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd', '$data');";
+        $procedure = "CALL `IMPORT_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd','$clt', '$tdtOrigen', '$NumberOrigen', '$data','$type' );";
 
 
         $execute = $this->select($procedure);
@@ -681,7 +660,7 @@ class TransferenciaModel extends Mysql
             $correlative = '0000000001';
         }
 
-        $selectDetails = $this->getDetailsImport($vnd, $correlative, $amc);
+        $selectDetails = $this->getDetailsImport($clt, $correlative, $amc);
 
         return $selectDetails;
     }
@@ -724,7 +703,10 @@ class TransferenciaModel extends Mysql
       PDT_LICLTSCAJA,
       DCL_ACTIVO AS DCL_PDA_CONTEO,
       IFNULL(PESADO.PESADO,0) AS PESADO,
-    '0' AS PIEZAS
+    '0' AS PIEZAS,
+    DCL_VEN_CODIGO,
+    VEN_NOMBRE
+
             
            FROM `ADN_MOVCLI` 
         JOIN `ADN_DOCCLI` ON MCL_DCL_NUMERO = DCL_NUMERO
@@ -733,6 +715,7 @@ class TransferenciaModel extends Mysql
         JOIN `adn_clientes` ON DCL_CLT_CODIGO = CLT_CODIGO
         JOIN `adn_productos` ON MCL_UPP_PDT_CODIGO = PDT_CODIGO
         JOIN `adn_undagru` ON PDT_CODIGO = UGR_PDT_CODIGO AND MCL_UPP_UND_ID = UGR_UND_ID
+        JOIN ADN_VENDEDORES ON DCL_VEN_CODIGO = VEN_CODIGO
         LEFT JOIN (
              SELECT 
                 PDA_NUMERO, 
@@ -744,7 +727,7 @@ class TransferenciaModel extends Mysql
                 WHERE 
                       PDA_DET_CODIGO = '$clt' 
                   AND PDA_NUMERO = '$number'
-                  AND PDA_TIPO = '3'
+                  AND PDA_TIPO = '5'
                 GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID
                 
                 ) AS PESADO ON PESADO.PDA_NUMERO = DCL_NUMERO 
@@ -753,13 +736,12 @@ class TransferenciaModel extends Mysql
                       AND PESADO.PDA_UPP_UND_ID = MCL_UPP_UND_ID
               WHERE DCL_NUMERO = '$number'
           AND DCL_CLT_CODIGO = '$clt'
-               AND DCL_TDT_CODIGO = 'PDA'
+               AND DCL_TDT_CODIGO = 'PDAT'
              GROUP BY MCL_UPP_PDT_CODIGO; ";
 
 
-        dep($query);
-        die();
 
+     
         $execute = $this->select_all($query);
 
         return $execute;
@@ -778,29 +760,31 @@ class TransferenciaModel extends Mysql
     public function insertCall($numero, $amc_origen, $amc_destino, $sucursal, $producto, $proveedor, $und, $canxund, $cantidad, $canasta, $extra, $ubica, $fecha, $inicio, $fin, $llegada, $tk, $ta, $tipoCanasta)
     {
         $user = !isset($_SESSION['userData']['OPE_NUMERO']) ? '1' : $_SESSION['userData']['OPE_NUMERO'];
-        $call = "CALL INSERT_PESADAS('$numero', '$amc_origen', '$amc_destino', '$sucursal', '$producto', '$proveedor', '$und', '$canxund', '$cantidad', '$canasta', '$extra', '$ubica', '$fecha', '$inicio', '$fin', '$llegada', '$tk', '$ta','$user','3','$tipoCanasta')";
+        $call = "CALL INSERT_PESADAS('$numero', '$amc_origen', '$amc_destino', '$sucursal', '$producto', '$proveedor', '$und', '$canxund', '$cantidad', '$canasta', '$extra', '$ubica', '$fecha', '$inicio', '$fin', '$llegada', '$tk', '$ta','$user','5','$tipoCanasta')";
 
 
         $execute = $this->select($call);
         return $execute;
     }
 
-    public function updateClose($numero, $clt, $scs)
+    public function callAutoVenta($numero, $client,$vnd, $scs)
     {
 
-        $call = "CALL UPDATE_PESADAS('$clt', '$numero', '$scs')";
+        $call = "CALL AUTOVENTA_PESADAS('$numero', '$client','$vnd','$scs')";
 
 
-        $execute = $this->select($call);
-        return $execute;
+        //$execute = $this->select($call);
+        return 1;
     }
 
 
 
-    public function deleteDocument($numero, $clt, $scs)
+    public function deleteDocument($numero, $clt, $scs, $type)
     {
 
-        $callDelete = "CALL DELETE_PESADAS('$numero', '$clt','$scs')";
+        
+        $callDelete = "CALL DELETE_PESADAS('$numero', '$clt','$scs','$type')";
+    
 
 
         $execute = $this->select($callDelete);
@@ -861,7 +845,7 @@ class TransferenciaModel extends Mysql
         ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
          AND PESADASCANASTAS.DET = PDA_DET_CODIGO
         WHERE 
-        PDA_TIPO = '3'
+        PDA_TIPO = '5'
         AND PDA_NUMERO = '@NUMERO'  
         AND PDA_DET_CODIGO = '@CODIGO'
         AND  PDA_SCS_CODIGO = '@SUCURSAL'
@@ -938,15 +922,17 @@ class TransferenciaModel extends Mysql
         AND CONTEO_PESADAS.DET_CODIGO = PDA_DET_CODIGO
         AND CONTEO_PESADAS.SCS_CODIGO = PDA_SCS_CODIGO 
         AND CONTEO_PESADAS.PDAPRODUCTO = PDA_UPP_PDT_CODIGO 
-        WHERE PDA_TIPO = '3' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
+        WHERE PDA_TIPO = '5' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
         AND  PDA_SCS_CODIGO = '@SUCURSAL'
         GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID;";
 
         $newSql = str_replace('@SUCURSAL', $sucursal, str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql)));
 
 
+
         $execute = $this->select_all($newSql);
 
+    
         return $execute;
     }
 
@@ -988,17 +974,7 @@ class TransferenciaModel extends Mysql
         JOIN ( SELECT OPE_NOMBRE, OPE_NUMERO FROM sistemasadn.adn_usuarios) AS OPERADORES ON OPE_NUMERO = PDA_USUARIO
         JOIN (
             SELECT
-            /*PDA_NUMERO AS PDANUMERO, 
-            PDA_UPP_PDT_CODIGO AS PDT_CODIGO,
-            PDA_DET_CODIGO AS DETCODIGO,
-            PDA_UPP_UND_ID AS UNIDAD,
-            SUM(PDA_CANTIDAD )as PDACANTIDAD,
-            PDA_CANXUND AS CANXUND,
-            PDA_CANASTA AS CANASTA,
-            CTA_DESCRIPCION AS CANASTADESCRI,
-            PDA_INICIO AS INICIO,
-            PDA_FIN AS FIN,
-            */
+
             PDA_UPP_PDT_CODIGO AS PDT_CODIGO,
             IF(PDA_CANXUND > 0 AND PDA_UPP_UND_ID = 'UND', PDA_CANTIDAD/PDA_CANXUND, 0) AS CAJAS,
             SUM(PDA_EXTRA) AS EXTRA,
@@ -1009,7 +985,7 @@ class TransferenciaModel extends Mysql
             WHERE PDA_NUMERO = '$numero'
             AND PDA_DET_CODIGO = '$codigo'
             AND PDA_UPP_PDT_CODIGO = '$producto'
-            AND PDA_TIPO = '3'
+            AND PDA_TIPO = '5'
             GROUP BY PDA_UPP_PDT_CODIGO
         ) AS INFOGENERAL ON INFOGENERAL.PDT_CODIGO = PDA_UPP_PDT_CODIGO
             LEFT JOIN (
@@ -1034,7 +1010,7 @@ class TransferenciaModel extends Mysql
         WHERE PDA_NUMERO = '$numero'
         AND PDA_DET_CODIGO = '$codigo'
         AND PDA_UPP_PDT_CODIGO = '$producto'
-        AND PDA_TIPO = '3'
+        AND PDA_TIPO = '5'
         GROUP BY ID,PDA_NUMERO, PDA_SCS_CODIGO, PDA_DET_CODIGO, PDA_UPP_PDT_CODIGO;";
 
         $execute = $this->select_all($sql);

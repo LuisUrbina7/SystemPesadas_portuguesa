@@ -372,11 +372,15 @@
   border-radius: 1px 6px 6px 1px;
 }
 
-#transfer-label {
+#autoventa-label {
 
   width: 30px;
   background-color: #16fd2e;
   height: 100%;
   right: 0;
   border-radius: 1px 6px 6px 1px;
+}
+
+.bg-autoventa{
+  background-color: #16fd2e;
 }

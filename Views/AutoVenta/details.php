@@ -139,11 +139,11 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                     <div class="card">
                         <div class="card-header  py-2 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center rounded bg-success px-2">
-                                <small>N° </small><input type="number" class="form-control inputs-disable" value="<?= !empty($data['page_data'][0]['DCL_NUMERO']) ? $data['page_data'][0]['DCL_NUMERO'] : substr($data['page_correlative'],10,10) ?>" id="main-correlative">
+                                <small>N° </small><input type="number" class="form-control inputs-disable" value="<?= !empty($data['page_data'][0]['DCL_NUMERO']) ? $data['page_data'][0]['DCL_NUMERO'] :$data['page_correlative'] ?>" id="main-correlative">
                             </div>
                             <div class="w-50">
                                 <select class="js-example-basic-single w-100" name="state" id="idData">
-                                    <option selected style="color:black;" value="<?= !empty($data['page_data'][0]['DCL_CLT_CODIGO']) ? $data['page_data'][0]['DCL_CLT_CODIGO'] : null ?>"><?= !empty($data['page_data'][0]['DCL_CLT_CODIGO']) ? $data['page_data'][0]['CLT_NOMBRE'] : '-- Seleccione --' ?></option>
+                                    <option selected style="color:black;" value="<?= !empty($data['page_data'][0]['DCL_VEN_CODIGO']) ? $data['page_data'][0]['DCL_VEN_CODIGO'] : null ?>"><?= !empty($data['page_data'][0]['DCL_VEN_CODIGO']) ? $data['page_data'][0]['VEN_NOMBRE'] : '-- Seleccione --' ?></option>
                                     <?php foreach ($data['page_vendedores'] as $details) : ?>
                                         <option value="<?= $details['VEN_CODIGO'] ?>|<?= $details['VEN_NOMBRE'] ?> " style="color:black;"><?= $details['VEN_NOMBRE'] ?></option>
                                     <?php endforeach; ?>
@@ -202,7 +202,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                                     $styleClass =  $details['PESADO'] == 0 ? "details-odc-style" :   "details-odc-style-weight";
                                     $registerType = $details['DCL_DESCRIDOWN'] == 1 ? 'light' : 'success';
                             ?>
-                                    <a href="<?= base_url() ?>/Ventas/content?id=<?= $details['DCL_NUMERO'] ?> &cl=<?= $details['DCL_CLT_CODIGO'] ?> &pdt=<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-pdt="<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-und="<?= $details['MCL_UPP_UND_ID'] ?>" data-exiscj="<?= number_format($details['CAJA'], 2) ?>" data-exisund="<?= number_format($details['UND_KG'], 2) ?>" data-canxund="<?= $details['PDT_LICLTSCAJA'] ?>" data-valor="<?= number_format($details['CAJA'], 2) ?>" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_CLT_CODIGO'] ?>" onclick="setInfoDetails(this)">
+                                    <a href="<?= base_url() ?>/AutoVenta/content?id=<?= $details['DCL_NUMERO'] ?> &cl=<?= $details['DCL_CLT_CODIGO'] ?> &pdt=<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-pdt="<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-und="<?= $details['MCL_UPP_UND_ID'] ?>" data-exiscj="<?= number_format($details['CAJA'], 2) ?>" data-exisund="<?= number_format($details['UND_KG'], 2) ?>" data-canxund="<?= $details['PDT_LICLTSCAJA'] ?>" data-valor="<?= number_format($details['CAJA'], 2) ?>" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_CLT_CODIGO'] ?>" onclick="setInfoDetails(this)">
                                         <li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg <?= $styleClass ?> p-1">
                                             <div class="d-flex align-items-center">
                                                 <button onclick="ignoreHeavy(this)" class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 p-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-lg">add_shopping_cart</i></button>

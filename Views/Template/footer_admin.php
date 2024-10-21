@@ -20,9 +20,9 @@
 
 
 
-          <!--   Core JS Files   -->
+          <!--   Core JS Files   
           <script src="<?= media() ?>/js/core/popper.min.js"></script>
-          <script src="<?= media() ?>/js/core/bootstrap.min.js"></script>
+          <script src="<?= media() ?>/js/core/bootstrap.min.js"></script> -->
           <script src="<?= media() ?>/js/plugins/perfect-scrollbar.min.js"></script>
           <script src="<?= media() ?>/js/plugins/smooth-scrollbar.min.js"></script>
           <script src="<?= media() ?>/js/plugins/chartjs.min.js"></script>

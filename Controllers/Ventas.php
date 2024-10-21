@@ -565,16 +565,7 @@ class Ventas extends Controllers
 					die();
 				}
 
-				/*	if ($this->model->isTransactionActive()) {
-					$this->model->commit();
-				}
-
-				$this->model->beginTransaction();*/
-
 				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '1', $_SESSION['userData']['OPE_AMC_PESADA']);
-
-
-				//$this->model->commit();
 
 
 				echo json_encode($insert, JSON_UNESCAPED_UNICODE);

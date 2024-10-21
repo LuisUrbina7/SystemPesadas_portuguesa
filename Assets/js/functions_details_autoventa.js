@@ -240,7 +240,7 @@ function getWeight() {
 		new XMLHttpRequest() :
 		new ActiveXObject('Microsoft.XMLHTTP');
 
-	var ajaxUrl = base_url + '/Transferencia/getWeight';
+	var ajaxUrl = base_url + '/AutoVenta/getWeight';
 
 	request.open("GET", ajaxUrl, true);
 	request.send();
@@ -312,24 +312,7 @@ function aggRow() {
 	if (unit != 'UND') {
 		reference = parseFloat(document.getElementById('weight-value').value);
 
-		/*
-		let valorUnd = parseFloat(document.getElementById('valor-und').value);
-		let valorCj = parseFloat(document.getElementById('valor').value);
 
-		let countWeight = parseFloat(parseFloat(document.getElementById('weight-total').innerText));
-
-		let validaExis = (valorCj * canxund) + valorUnd;
-
-		console.log(validaExis);
-		if ((reference + countWeight) > validaExis) {
-
-			 validaAmount = Number(validaExis - countWeight).toFixed(2);
-
-			if ( validaAmount == 0) {
-				return 0;
-			}
-		}
-		*/
 	} else {
 
 		let valorUnd = parseFloat(document.getElementById('valor-und').value);
@@ -343,11 +326,13 @@ function aggRow() {
 
 		weight = weight + weightSecondary;
 
-		let divisor = canxund || 1;
+		let divisor = canxund  || 1;
 
 		let temp = weight / divisor;
 
 		reference = (Math.floor(temp)).toFixed(2);
+
+		console.log(weight + 'divo  '+ divisor);
 
 		referenceKg = ((temp - Math.floor(temp)) * divisor).toFixed(2);
 
@@ -534,6 +519,7 @@ function aggRow() {
 				reference = (Number(0)).toFixed(2);
 			}
 
+			console.log("Ingresa aqui");
 			let data = '<td> <button class="btn btn-danger shadow-danger p-2 mb-0" onclick="deleteRow(this)"> <i class="material-icons  text-lg">delete_forever</i></button></td>\
 					<td>   <input type="time" class="form-control inputs-disable" name="dateStart[]" value="' + dateStart + '"  ></td>\
 					<td> <input type="time"   class="form-control inputs-disable"  name="dateEnd[]" value="' + dateEnd + '"  ></td>\
@@ -599,7 +585,7 @@ function deleteRow(index) {
 					new XMLHttpRequest() :
 					new ActiveXObject('Microsoft.XMLHTTP');
 
-				var ajaxUrl = base_url + '/Transferencia/delete?id=' + id + '&amount=' + amount;
+				var ajaxUrl = base_url + '/AutoVenta/delete?id=' + id + '&amount=' + amount;
 
 				request.open("GET", ajaxUrl, true);
 				request.send();
@@ -907,10 +893,12 @@ function setInfo(data) {
 		let pdtCodigo = document.getElementById('codigo-pdt').textContent;
 		let pdcClient = document.getElementById('pdc_clt').value;
 
-		ajaxUrl = base_url + "/Transferencia/content?id=" + pdcNumber + "&cl=" + pdcClient + "&pdt=" + pdtCodigo;
+		ajaxUrl = base_url + "/AutoVenta/content?id=" + pdcNumber + "&cl=" + pdcClient + "&pdt=" + pdtCodigo;
 
 
 	};
+
+	console.log(ajaxUrl);
 
 
 	let table = document.getElementById('table-date');
@@ -1022,8 +1010,6 @@ function insertDetails() {
 
 
 
-
-
 	if (pdtCodigo != '0000') {
 
 		data.forEach(function (element, index) {
@@ -1060,7 +1046,7 @@ function insertDetails() {
 			new XMLHttpRequest() :
 			new ActiveXObject('Microsoft.XMLHTTP');
 
-		var ajaxUrl = base_url + '/Transferencia/insertDetails';
+		var ajaxUrl = base_url + '/AutoVenta/insertDetails';
 
 
 		request.timeout = 8000;
@@ -1310,7 +1296,7 @@ function ignoreHeavy(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/Transferencia/insertSkip';
+			var ajaxUrl = base_url + '/AutoVenta/insertSkip';
 
 			console.log(ajaxUrl);
 
@@ -1358,7 +1344,7 @@ function ignoreHeavy(data) {
 async function aggProducts() {
 
 	try {
-		const response = await fetch(`${base_url}/Transferencia/getProducts`);
+		const response = await fetch(`${base_url}/AutoVenta/getProducts`);
 		if (!response.ok) {
 			throw new Error('Error al cargar los productos');
 		}
@@ -1449,7 +1435,7 @@ async function addProductToTable(row) {
 	let newDiv = '';
 
 
-	let href = `${base_url}/Transferencia/content?id=${numero}&cl=${proveedor}&pdt=${codigo}";`;
+	let href = `${base_url}/AutoVenta/content?id=${numero}&cl=${proveedor}&pdt=${codigo}";`;
 
 	if ((cajas == '' || cajas == 0) && (unidades == '' || unidades == 0)) {
 
@@ -1478,7 +1464,7 @@ async function addProductToTable(row) {
 	var request = (window.XMLHttpRequest) ?
 		new XMLHttpRequest() :
 		new ActiveXObject('Microsoft.XMLHTTP');
-	var ajaxUrl = base_url + '/Transferencia/setProducts';
+	var ajaxUrl = base_url + '/AutoVenta/setProducts';
 	request.open("POST", ajaxUrl, true);
 	request.send(form);
 	request.onreadystatechange = function () {
@@ -1622,7 +1608,7 @@ async function Import() {
 	try {
 
 
-		const response = await fetch(`${base_url}/Transferencia/import?id=${idData}`);
+		const response = await fetch(`${base_url}/AutoVenta/import?id=${idData}`);
 		if (!response.ok) {
 			throw new Error('Error al cargar los productos');
 		}
@@ -1691,7 +1677,7 @@ async function docSelect(doc) {
 	try {
 
 
-		const response = await fetch(`${base_url}/Transferencia/getdocumentImpor?idNumber=${idNumber}&idData=${idData}&tipodoc=${tipoDoc}`);
+		const response = await fetch(`${base_url}/AutoVenta/getdocumentImpor?idNumber=${idNumber}&idData=${idData}&tipodoc=${tipoDoc}`);
 		if (!response.ok) {
 			throw new Error('Error al cargar los productos');
 		}
@@ -1835,7 +1821,7 @@ function saveImport() {
 		new XMLHttpRequest() :
 		new ActiveXObject('Microsoft.XMLHTTP');
 
-	var ajaxUrl = base_url + '/Transferencia/insertDetailsImport';
+	var ajaxUrl = base_url + '/AutoVenta/insertDetailsImport';
 
 
 	request.open("POST", ajaxUrl, true);
@@ -1862,7 +1848,7 @@ function saveImport() {
 
 			objData.forEach(function (element, index) {
 
-				let href = `${base_url}/Transferencia/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
+				let href = `${base_url}/AutoVenta/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
 
 				newDiv += `<a href="${href}" data-pdt="${element.MCL_UPP_PDT_CODIGO}" data-und="${element.MCL_UPP_UND_ID}" data-exiscj="${element.CAJA}" data-exisund="${element.UND_KG}" data-canxund="${element.PDT_LICLTSCAJA}" data-valor="${element.CAJA}" data-number="${element.DCL_NUMERO}" data-det="${element.DCL_CLT_CODIGO}" onclick="setInfoDetails(this)">
 			<li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg details-odc-style p-1 ">
@@ -2016,7 +2002,7 @@ async function saveImport() {
 	}
 
 	try {
-		let response = await fetch(base_url + '/Transferencia/insertDetailsImport', {
+		let response = await fetch(base_url + '/AutoVenta/insertDetailsImport', {
 			method: 'POST',
 			body: forData
 		});
@@ -2043,7 +2029,7 @@ async function saveImport() {
 			let newDiv = '';
 
 			objData.forEach(function (element, index) {
-				let href = `${base_url}/Transferencia/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
+				let href = `${base_url}/AutoVenta/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
 
 				newDiv += `<a href="${href}" data-pdt="${element.MCL_UPP_PDT_CODIGO}" data-und="${element.MCL_UPP_UND_ID}" data-exiscj="${element.CAJA}" data-exisund="${element.UND_KG}" data-canxund="${element.PDT_LICLTSCAJA}" data-valor="${element.CAJA}" data-number="${element.DCL_NUMERO}" data-det="${element.DCL_CLT_CODIGO}" onclick="setInfoDetails(this)">
                         <li class="list-group-item d-flex justify-content-between mb-2 border-radius-lg details-odc-style p-1">
@@ -2237,11 +2223,11 @@ async function saveDoc() {
 	forData.append("PDC_VEN_CODIGO", seller);
 	forData.append("PDC_TDT_CODIGO", 'PDAT');
 	forData.append("PDC_SCS_CODIGO", "000001");
-	//forData.append("PDC_CLT_CODIGO", clienImport);
+	forData.append("PDC_CLT_CODIGO", "0000000000");
 	forData.append("PMV_DATA", JSON.stringify(json));
 
 	let newDiv = '';
-	var ajaxUrl = base_url + '/Transferencia/insertDetailsNew';
+	var ajaxUrl = base_url + '/AutoVenta/insertDetailsNew';
 
 	if (spinner) {
 		spinner.classList.remove("d-none");
@@ -2249,6 +2235,8 @@ async function saveDoc() {
 	}
 
 	try {
+
+		console.log(forData);
 		let response = await fetch(ajaxUrl, {
 			method: 'POST',
 			body: forData
@@ -2274,10 +2262,12 @@ async function saveDoc() {
 				console.log('no existe.');
 			}
 
+			console.log(objData);
+
 			objData.forEach(function (element, index) {
 				let styleType = element.DCL_DESCRIDOWN == '1' ? 'light' : 'success';
 				let styleClass = element.PESADO == 0 ? "details-odc-style" : "details-odc-style-weight";
-				let href = `${base_url}/Transferencia/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
+				let href = `${base_url}/AutoVenta/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
 
 				newDiv += `<a href="${href}" data-pdt="${element.MCL_UPP_PDT_CODIGO}" data-und="${element.MCL_UPP_UND_ID}" data-exiscj="${element.CAJA}" data-exisund="${element.UND_KG}" data-canxund="${element.PDT_LICLTSCAJA}" data-valor="${element.CAJA}" data-number="${element.DCL_NUMERO}" data-det="${element.DCL_CLT_CODIGO}" onclick="setInfoDetails(this)">
                 <li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg ${styleClass} p-1 ">
@@ -2384,16 +2374,18 @@ function closeCount() {
 			let details = new FormData();
 			let number = document.getElementById('pdc_numero').value;
 			let cltCode = document.getElementById('pdc_clt').value;
+			let idDataTemp = document.getElementById('idData').value.split('|');
+			let seller = idDataTemp[0];
 
 			details.append('NUMBER', number);
-
 			details.append('CLIENT', cltCode);
+			details.append('VENDEDOR', seller);
 
 			var request = (window.XMLHttpRequest) ?
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/Transferencia/getDetailsToEdit';
+			var ajaxUrl = base_url + '/AutoVenta/getDetailsToEdit';
 
 			request.open("POST", ajaxUrl, true);
 			request.send(details);
@@ -2413,7 +2405,7 @@ function closeCount() {
 						});
 
 						add();
-						window.location.href = base_url + '/Ventas';
+						window.location.href = base_url + '/AutoVenta';
 					} else {
 
 						Swal.fire({
@@ -2468,7 +2460,7 @@ function reportDetailsPesada() {
 
 	var ajaxUrl =
 		base_url +
-		"/Transferencia/viewPdfDetailsPesada?id=" +
+		"/AutoVenta/viewPdfDetailsPesada?id=" +
 		dclCodigo +
 		"&clt=" +
 		cltCodigo +
@@ -2546,7 +2538,7 @@ function ticketByHeavy(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + "/Transferencia/ticketByHeavy?id=" + dclCodigo + "&clt=" + cltCodigo + "&pdt=" + pdtCodigo;
+			var ajaxUrl = base_url + "/AutoVenta/ticketByHeavy?id=" + dclCodigo + "&clt=" + cltCodigo + "&pdt=" + pdtCodigo;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();

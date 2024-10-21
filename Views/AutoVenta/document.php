@@ -4,8 +4,8 @@
     <div class="col-12">
         <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                    <h6 class="text-white text-capitalize ps-3"> Ventas. </h6>
+                <div class="bg-autoventa shadow-success border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3"> Cargas Realizadas. </h6>
 
                 </div>
             </div>
@@ -17,7 +17,7 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Numero</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Cliente</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Vendedor</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Toneladas</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estatus</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
@@ -34,7 +34,7 @@
                                 ?>
                                 <tr class="list-odc-style">
                                     <td>
-                                        <a href="<?= base_url() ?>/Ventas/details?id=<?= $details['DCL_NUMERO'] ?>&cl=<?= $details['DCL_CLT_CODIGO'] ?>" class="text-decoration-none">
+                                        <a href="<?= base_url() ?>/AutoVenta/details?id=<?= $details['DCL_NUMERO'] ?>&cl=<?= $details['DCL_CLT_CODIGO'] ?>" class="text-decoration-none">
                                             <div class="d-flex px-2 py-1">
                                                 <div class="p-2 btn btn-light rounded-circle d-flex me-2 m-0">
                                                     <i class="material-icons opacity-10">stream</i>
@@ -47,8 +47,8 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0"><?= $details['CLT_NOMBRE'] ?></p>
-                                        <p class="text-xs text-secondary mb-0"><?= $details['DCL_CLT_CODIGO'] ?></p>
+                                        <p class="text-xs font-weight-bold mb-0"><?= $details['VEN_NOMBRE'] ?></p>
+                                        <p class="text-xs text-secondary mb-0"><?= $details['DCL_VEN_CODIGO'] ?></p>
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <span class="text-green"><?= $details['PESO'] ?></span>

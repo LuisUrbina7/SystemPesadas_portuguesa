@@ -7,7 +7,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 
 
-class Transferencia extends Controllers
+class AutoVenta extends Controllers
 {
 	public function __construct()
 	{
@@ -23,17 +23,17 @@ class Transferencia extends Controllers
 
 
 
-	public function transferencia()
+	public function AutoVenta()
 	{
 
 		$data['page_id'] = 1;
-		$data['page_tag'] = "transferencia";
-		$data['page_title'] = "transferencia";
-		$data['page_name'] = "transferencia";
+		$data['page_tag'] = "AutoVenta";
+		$data['page_title'] = "AutoVenta";
+		$data['page_name'] = "AutoVenta";
 		$data['page_data'] = $this->model->getDocument();
-		$data['page_functions_js'] = "functions_transferencia.js";
+		$data['page_functions_js'] = "functions_autoventa.js";
 
-		$this->views->getView($this, "ventas", $data);
+		$this->views->getView($this, "document", $data);
 	}
 
 
@@ -59,22 +59,15 @@ class Transferencia extends Controllers
 		$data['page_vendedores'] = $this->model->getSellers();
 
 
-		$data['page_functions_js'] = "functions_details_transferencia.js";
+
+		$data['page_functions_js'] = "functions_details_autoventa.js";
 
 
 		$this->views->getView($this, "details", $data);
 	}
 
 
-	public function getWeight()
-	{
-		//$archivo = 'C:\\Users\\SoporteAdn\\Desktop\\balanza\\log.txt';
-		$archivo = 'C:\\xampp\\htdocs\\weight.txt';
 
-		$contenido = file_get_contents($archivo);
-
-		echo json_encode($contenido, JSON_UNESCAPED_UNICODE);
-	}
 
 
 	public function insertDetails()
@@ -215,6 +208,8 @@ class Transferencia extends Controllers
 
 	public function content()
 	{
+
+
 		$numero = $_GET['id'];
 		$cliente = $_GET['cl'];
 		$sku = $_GET['pdt'];
@@ -287,6 +282,7 @@ class Transferencia extends Controllers
 		if ($_POST) {
 			$numero = $_POST['NUMBER'];
 			$client = $_POST['CLIENT'];
+			$vnd = $_POST['VENDEDOR'];
 			$scs = '000001';
 
 			try {
@@ -295,7 +291,7 @@ class Transferencia extends Controllers
 
 				if ($validate) {
 
-					$update = $this->model->updateClose($numero, $client, $scs);
+					$update = $this->model->callAutoVenta($numero, $client, $vnd, $scs);
 
 					$arrResponse = array('status' => true, 'msg' => 'Cerrado correctamente.');
 
@@ -320,41 +316,6 @@ class Transferencia extends Controllers
 	}
 
 
-	/*public function generatePdf()
-	{
-		require_once 'vendor/autoload.php';
-		$dompdf = new Dompdf\Dompdf();
-
-
-		$numero = $_GET['id'];
-		$codigo = $_GET['pv'];
-		$sucursal = $_GET['scs'];
-
-
-
-		$data = $this->model->generatePdf($numero, $codigo, $sucursal);
-
-
-		extract($data);
-
-		ob_start();
-
-
-		include './Views/Document/pdf.php';
-		$html = ob_get_clean();
-
-		$dompdf->loadHtml($html);
-
-
-		$dompdf->render();
-
-		$pdf_content = $dompdf->output();
-
-
-		header('Content-Type: application/pdf');
-		header('Content-Length: ' . strlen($pdf_content));
-		echo $pdf_content;
-	}*/
 
 	public function setProducts()
 	{
@@ -500,7 +461,7 @@ class Transferencia extends Controllers
 					die();
 				}
 
-				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data,'2',$_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, '2', $_SESSION['userData']['OPE_AMC_PESADA']);
 
 				echo json_encode($insert, JSON_UNESCAPED_UNICODE);
 
@@ -539,6 +500,7 @@ class Transferencia extends Controllers
 	public function insertDetailsNew()
 	{
 
+
 		if ($_POST) {
 
 
@@ -547,6 +509,7 @@ class Transferencia extends Controllers
 			$scs = $_POST["PDC_SCS_CODIGO"];
 			$vnd = $_POST["PDC_VEN_CODIGO"];
 			$data = $_POST['PMV_DATA'];
+			$clt = $_POST["PDC_CLT_CODIGO"];
 			$fecha = date('Y-m-d');
 
 
@@ -561,9 +524,9 @@ class Transferencia extends Controllers
 					die();
 				}
 
-			
 
-				$insert = $this->model->insertCallTransfer($numero, $tipodoc, $scs, $vnd, $data, '4', $_SESSION['userData']['OPE_AMC_PESADA']);
+
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '5', $_SESSION['userData']['OPE_AMC_PESADA']);
 
 
 
@@ -593,10 +556,11 @@ class Transferencia extends Controllers
 		$numero = $_GET['id'];
 		$clt = $_GET['clt'];
 		$scs = $_GET['scs'];
+		$type = $_GET['type'];
 
 
 		try {
-			$estado = $this->model->deleteDocument($numero, $clt, $scs);
+			$estado = $this->model->deleteDocument($numero, $clt, $scs, $type);
 			$arrResponse = array('status' => true, 'msg' => 'Borrado correctamente.');
 			echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
 			die();
@@ -787,6 +751,7 @@ class Transferencia extends Controllers
 
 		$arrData = $this->model->generatePdf($dclNumero, $cliente, $sucursal);
 
+
 		try {
 
 			if (!empty($arrData)) {
@@ -810,7 +775,7 @@ class Transferencia extends Controllers
 				$printer->setJustification(Printer::JUSTIFY_LEFT);
 				$printer->text("Telefono: " . $arrData[0]['EMP_TELEFONO1'] . "\n", "C");
 				$printer->text("Email: " . $arrData[0]['EMP_EMAIL'] . "\n", "C");
-				$printer->text("Numero Pesada: " . $arrData[0]['PDA_NUMERO'] . "\n", "C");
+				$printer->text("Numero Carga: " . $arrData[0]['PDA_NUMERO'] . "\n", "C");
 				$printer->text("Cliente: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
 				$printer->text("Fecha: " . $arrData[0]['PDA_FECHA'] . "\n", "C");
 				$printer->text("_______________________________________________" . "\n", "C");
@@ -873,6 +838,7 @@ class Transferencia extends Controllers
 
 		$arrData = $this->model->generatePdfGeneral($dclNumero, $cliente, $sucursal);
 
+
 		try {
 
 			if (!empty($arrData)) {
@@ -895,7 +861,7 @@ class Transferencia extends Controllers
 				$printer->setJustification(Printer::JUSTIFY_LEFT);
 				$printer->text("Telefono: " . $arrData[0]['EMP_TELEFONO1'] . "\n", "C");
 				$printer->text("Email: " . $arrData[0]['EMP_EMAIL'] . "\n", "C");
-				$printer->text("Numero Pesada: " . $arrData[0]['PDA_NUMERO'] . "\n", "C");
+				$printer->text("Numero Carga: " . $arrData[0]['PDA_NUMERO'] . "\n", "C");
 				$printer->text("Cliente: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
 				$printer->text("Fecha: " . $arrData[0]['PDA_FECHA'] . "\n", "C");
 				$printer->text("_______________________________________________" . "\n", "C");

@@ -1,11 +1,11 @@
 <?php
-const BASE_URL = "http://localhost/Pesadas_estables/SystemPesadas_portuguesa";
+const BASE_URL = "http://localhost/SystemPesadas_portuguesa";
 
 //Zona horaria
 date_default_timezone_set('America/Caracas');
 
 //Datos de conexión a Base de Datos
-const DB_HOST = "localhost:3306";
+const DB_HOST = "localhost:3308";
 const DB_NAME = "feriapollo";
 const DB_USER = "sistemas";
 const DB_PASSWORD = 'adn';
@@ -18,6 +18,7 @@ const SPM = ",";
 //Simbolo de moneda
 const SMONEY = "$";
 
+const RAIZ_IMPRESORA = '';
 //constates para envio de correo
 /*const NOMBRE_EMPESA = "Intersat Los Andes C.A.";
 	const NOMBRE_REMITENTE = "Intersat Los Andes C.A.";

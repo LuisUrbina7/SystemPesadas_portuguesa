@@ -20,7 +20,7 @@ function generatePdfGeneral(data) {
 
   console.log(values);
 
-  var ajaxUrl = base_url + '/Ventas/generatePdfGeneral?id=' + numero + '&clt=' + codigo + '&scs=' + sucursal;
+  var ajaxUrl = base_url + '/AutoVenta/generatePdfGeneral?id=' + numero + '&clt=' + codigo + '&scs=' + sucursal;
 
   console.log(ajaxUrl);
 
@@ -40,7 +40,7 @@ function viewPdf(data) {
 
   var ajaxUrl =
     base_url +
-    "/Ventas/viewPdf?id=" +
+    "/AutoVenta/viewPdf?id=" +
     numero +
     "&clt=" +
     codigo +
@@ -86,7 +86,7 @@ function sale(data) {
         new XMLHttpRequest() :
         new ActiveXObject('Microsoft.XMLHTTP');
 
-      var ajaxUrl = base_url + '/Ventas/deleteDocument?id=' + number + '&clt=' + clt + '&scs=' + scs;
+      var ajaxUrl = base_url + '/AutoVenta/deleteDocument?id=' + number + '&clt=' + clt + '&scs=' + scs + '&type=4';
 
       request.open("GET", ajaxUrl, true);
       request.send();
@@ -160,7 +160,7 @@ function ticket(data) {
         new XMLHttpRequest() :
         new ActiveXObject('Microsoft.XMLHTTP');
 
-      var ajaxUrl = base_url + "/Ventas/ticket?id=" + numero + "&clt=" + codigo + "&scs=" + sucursal;
+      var ajaxUrl = base_url + "/AutoVenta/ticket?id=" + numero + "&clt=" + codigo + "&scs=" + sucursal;
 
       request.open("GET", ajaxUrl, true);
       request.send();
@@ -239,7 +239,7 @@ function ticketGeneral(data) {
         new XMLHttpRequest() :
         new ActiveXObject('Microsoft.XMLHTTP');
 
-      var ajaxUrl = base_url + "/Ventas/ticketGeneral?id=" + numero + "&clt=" + codigo + "&scs=" + sucursal;
+      var ajaxUrl = base_url + "/AutoVenta/ticketGeneral?id=" + numero + "&clt=" + codigo + "&scs=" + sucursal;
 
       request.open("GET", ajaxUrl, true);
       request.send();

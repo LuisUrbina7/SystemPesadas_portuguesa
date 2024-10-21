@@ -8,7 +8,7 @@
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
-    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+    <div class="collapse navbar-collapse  w-auto h-100 " id="sidenav-collapse-main">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link text-white active bg-gradient-primary" href="<?php echo base_url() ?>/home">
@@ -91,16 +91,24 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-white position-relative" href="<?php echo base_url() ?>/Transferencia/details" id="transfer">
+              <a class="nav-link text-white position-relative"  data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne" id="autoventa">
                 <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i class="material-icons opacity-10">compare_arrows</i>
                 </div>
-                <span class="nav-link-text ms-1">Transferencias</span>
+                <span class="nav-link-text ms-1">Cargo Autoventa</span>
 
-                <div id="transfer-label" class="position-absolute">
+                <div id="autoventa-label" class="position-absolute">
 
                 </div>
               </a>
+              <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                <div >
+                  <ul class=" ms-4 mx-3 ">
+                    <li class="p-1"> <a class="text-muted" href="<?php echo base_url() ?>/AutoVenta"><small> Listado </small></a></li>
+                    <li class="p-1"> <a class="text-muted" href="<?php echo base_url() ?>/AutoVenta/details"><small>Carga  </small></a></li>
+                  </ul>
+                </div>
+              </div>
             </li>
 
           <?php   } ?>
