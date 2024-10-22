@@ -57,6 +57,7 @@
 
           <script>
             const base_url = "<?= base_url(); ?>";
+            const url_sockets = "<?= url_sockets(); ?>";
           </script>
 
           <script src="<?=  media() ?>/dataTables/js/jquery-ui.js"></script>

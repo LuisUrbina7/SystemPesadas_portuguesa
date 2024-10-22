@@ -279,6 +279,7 @@ class DocumentGuiaModel extends Mysql
 				JOIN ADN_DOCCLIGUIA ON DCL_NUMGUIA = DCG_NUMERO
 				JOIN ADN_TRANSPORTISTAS ON TRA_CODIGO = DCG_TRA_CODIGO
 				WHERE DCL_NUMGUIA = '$numero' AND TRA_CODIGO = '$trans'
+				AND DCL_ACTIVO = '1'
 				GROUP BY MCL_UPP_PDT_CODIGO
 			) AS DOCUMENTOS
 			GROUP BY DOCUMENTOS.DCL_NUMGUIA, DOCUMENTOS.TRA_CODIGO
@@ -373,9 +374,10 @@ class DocumentGuiaModel extends Mysql
 		$call = "CALL `TRANSFERENCIA_PESADAS`('$numero', '$trans', '$origen_amc','$destino_amc', '$sucursal' )";
 
 
-		$execute = $this->select($call);
+		
+		//$execute = $this->select($call);
 
-		return $execute;
+		return 1;
 	}
 
 	public function correlative()

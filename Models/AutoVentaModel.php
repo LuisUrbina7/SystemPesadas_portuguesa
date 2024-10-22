@@ -798,7 +798,7 @@ class AutoVentaModel extends Mysql
         $sql = "SELECT 
             PDA_NUMERO, 
             PDA_DET_CODIGO, 
-            CLT_NOMBRE,
+             VENDEDOR.VEN_NOMBRE AS  CLT_NOMBRE,
             PDA_TK,
             PDA_TA,
             PDA_LLEGADA,
@@ -844,6 +844,11 @@ class AutoVentaModel extends Mysql
         )AS PESADASCANASTAS
         ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
          AND PESADASCANASTAS.DET = PDA_DET_CODIGO
+        JOIN (
+         SELECT VEN_CODIGO, VEN_NOMBRE, DCL_NUMERO, DCL_CLT_CODIGO FROM adn_doccli
+        JOIN ADN_VENDEDORES ON DCL_VEN_CODIGO = VEN_CODIGO WHERE DCL_TDT_CODIGO = 'PDAT' AND DCL_NUMERO = '@NUMERO' AND DCL_CLT_CODIGO = '@CODIGO' AND DCL_TIPTRA = 'D'
+        ) AS VENDEDOR ON VENDEDOR.DCL_NUMERO = PDA_NUMERO AND VENDEDOR.DCL_CLT_CODIGO = PDA_DET_CODIGO
+        
         WHERE 
         PDA_TIPO = '5'
         AND PDA_NUMERO = '@NUMERO'  
@@ -853,6 +858,7 @@ class AutoVentaModel extends Mysql
         GROUP BY PDA_NUMERO, PDA_DET_CODIGO;";
 
         $newSql = str_replace('@SUCURSAL', $sucursal, str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql)));
+
 
         $execute = $this->select_all($newSql);
 
@@ -864,7 +870,7 @@ class AutoVentaModel extends Mysql
         $sql = "SELECT 
         PDA_NUMERO, 
         PDA_DET_CODIGO, 
-        CLT_NOMBRE,
+       VENDEDOR.VEN_NOMBRE AS  CLT_NOMBRE,
         PDA_UPP_PDT_CODIGO, 
         PDT_DESCRIPCION, 
         PDA_UPP_UND_ID, 
@@ -922,14 +928,19 @@ class AutoVentaModel extends Mysql
         AND CONTEO_PESADAS.DET_CODIGO = PDA_DET_CODIGO
         AND CONTEO_PESADAS.SCS_CODIGO = PDA_SCS_CODIGO 
         AND CONTEO_PESADAS.PDAPRODUCTO = PDA_UPP_PDT_CODIGO 
+        JOIN (
+         SELECT VEN_CODIGO, VEN_NOMBRE, DCL_NUMERO, DCL_CLT_CODIGO FROM adn_doccli
+        JOIN ADN_VENDEDORES ON DCL_VEN_CODIGO = VEN_CODIGO WHERE DCL_TDT_CODIGO = 'PDAT' AND DCL_NUMERO = '@NUMERO' AND DCL_CLT_CODIGO = '@CODIGO' AND DCL_TIPTRA = 'D'
+        ) AS VENDEDOR ON VENDEDOR.DCL_NUMERO = PDA_NUMERO AND VENDEDOR.DCL_CLT_CODIGO = PDA_DET_CODIGO
+        
         WHERE PDA_TIPO = '5' AND PDA_NUMERO = '@NUMERO'  AND PDA_DET_CODIGO = '@CODIGO'
         AND  PDA_SCS_CODIGO = '@SUCURSAL'
         GROUP BY PDA_UPP_PDT_CODIGO, PDA_UPP_UND_ID;";
 
+
         $newSql = str_replace('@SUCURSAL', $sucursal, str_replace('@CODIGO', $codigo, str_replace('@NUMERO', $numero, $sql)));
 
-
-
+ 
         $execute = $this->select_all($newSql);
 
     
@@ -945,8 +956,8 @@ class AutoVentaModel extends Mysql
         PDA_TK,
         PDA_TA,
         PDA_FECHA,
-        CLT_CODIGO,
-        CLT_NOMBRE,
+        VENDEDOR.VEN_cODIGO AS  CLT_CODIGO,
+        VENDEDOR.VEN_NOMBRE AS  CLT_NOMBRE,
         PDA_NUMERO,
         PDA_UPP_PDT_CODIGO,
         PDA_DET_CODIGO,
@@ -1007,6 +1018,13 @@ class AutoVentaModel extends Mysql
             ON PESADASCANASTAS.CANASTAS_PDANUMERO = PDA_NUMERO
             AND PESADASCANASTAS.PDTCODIGO = PDA_UPP_PDT_CODIGO
             AND PESADASCANASTAS.PDAID = ID  
+
+     JOIN (
+         SELECT VEN_CODIGO, VEN_NOMBRE, DCL_NUMERO, DCL_CLT_CODIGO FROM adn_doccli
+        JOIN ADN_VENDEDORES ON DCL_VEN_CODIGO = VEN_CODIGO WHERE DCL_TDT_CODIGO = 'PDAT' AND DCL_NUMERO ='$numero' AND DCL_CLT_CODIGO = '$codigo' AND DCL_TIPTRA = 'D'
+        ) AS VENDEDOR ON VENDEDOR.DCL_NUMERO = PDA_NUMERO AND VENDEDOR.DCL_CLT_CODIGO = PDA_DET_CODIGO
+        
+
         WHERE PDA_NUMERO = '$numero'
         AND PDA_DET_CODIGO = '$codigo'
         AND PDA_UPP_PDT_CODIGO = '$producto'
@@ -1025,4 +1043,14 @@ class AutoVentaModel extends Mysql
 
         return $execute;
     }
+
+    public function updateClose($numero, $clt, $scs,$type)
+    {
+
+        $call = "CALL UPDATE_PESADAS('$clt', '$numero', '$scs','$type')";
+
+        $execute = $this->select($call);
+        return $execute;
+    }
+
 }

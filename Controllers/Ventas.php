@@ -295,7 +295,7 @@ class Ventas extends Controllers
 
 				if ($validate) {
 
-					$update = $this->model->updateClose($numero, $client, $scs);
+					$update = $this->model->updateClose($numero, $client, $scs,'3');
 
 					$arrResponse = array('status' => true, 'msg' => 'Cerrado correctamente.');
 
@@ -597,7 +597,7 @@ class Ventas extends Controllers
 
 
 		try {
-			$estado = $this->model->deleteDocument($numero, $clt, $scs);
+			$estado = $this->model->deleteDocument($numero, $clt, $scs,'3');
 			$arrResponse = array('status' => true, 'msg' => 'Borrado correctamente.');
 			echo json_encode($arrResponse, JSON_UNESCAPED_UNICODE);
 			die();

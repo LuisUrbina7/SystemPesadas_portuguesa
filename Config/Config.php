@@ -19,24 +19,4 @@ const SPM = ",";
 const SMONEY = "$";
 
 const RAIZ_IMPRESORA = '';
-//constates para envio de correo
-/*const NOMBRE_EMPESA = "Intersat Los Andes C.A.";
-	const NOMBRE_REMITENTE = "Intersat Los Andes C.A.";
-	const EMAIL_REMITENTE = "jacksonnieto98@gmail.com";
-	const WEB_EMPRESA = "https://intersatlosandes.com";
-
-
-	//Api-Key para Wisphub
-	const API_KEY_WISPHUB = "7pzsjPkT.jPCqtSL6E1CtPtPlnAIizLoFsfWreQAC";
-
-	//credenciales boton de pago banco de venezuela
-
-	const USUARIO_BOTON_DE_PAGO_VENEZUELA 	= "77120068";
-	const CLAVE_BOTON_DE_PAGO_VENEZUELA 	= "r1E6hacW";
-
-	/*const USUARIO_BOTON_DE_PAGO_VENEZUELA 	= "72715225";
-	const CLAVE_BOTON_DE_PAGO_VENEZUELA 	= "G3Gunm7j";
-
-
-	
-	const ID_FORMA_PAGO_ONLINE_WISPHUB = 45013;*/
+const URL_SOCKETS = 'LOCALHOST';

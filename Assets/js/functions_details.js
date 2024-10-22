@@ -8,6 +8,8 @@ var request = null;
 
 document.addEventListener('DOMContentLoaded', function () {
 
+	
+
 	var check = document.querySelector('#otros');
 	var checkSausages = document.querySelector('#embutidos');
 
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-	const socket = new WebSocket('ws://192.168.10.181:8080');
+	const socket = new WebSocket(`ws://${url_sockets}:8080`);
 
 	socket.addEventListener('message', function (event) {
 

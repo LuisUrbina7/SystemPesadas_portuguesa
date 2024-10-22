@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	btnSaveImport.addEventListener("click", saveImport);
 
 
-	const socket = new WebSocket('ws://192.168.10.181:8080');
+	const socket = new WebSocket(`ws://${url_sockets}:8080`);
 
 	socket.addEventListener('message', function (event) {
 
@@ -199,13 +199,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	setInterval(hora, 1000);
-
-	//setInterval(getWeight, 1000);
-
-
 	eventPressEnter();
-
 	clikRowTable();
+	
 }, false);
 
 
@@ -1351,7 +1347,7 @@ async function aggProducts() {
 		}
 		const data = await response.json();
 
-		console.log(data);
+		
 		populateTable(data);
 		initializeDataTable();
 
@@ -1484,7 +1480,7 @@ async function addProductToTable(row) {
 							<span class="text-xs">${descripcion}</span>
 						</div>
 					</div>
-					<div class="d-flex fs-6 align-items-center text-success text-gradient text-sm font-weight-bold">
+					<div class="d-flex fs-6 align-items-center  text-gradient text-sm font-weight-bold">
 						<span id="exis-cj"> ${cajas}</span>
 						|
 						<span id="exis-und"> ${unidades} </span>
@@ -1725,180 +1721,6 @@ function fillTable(movs) {
 
 }
 
-/*
-function saveImport() {
-
-	var forData = new FormData();
-	var select = document.getElementById('idData');
-	let cltTemp = (select.options[select.selectedIndex].value).split('|');
-	let idData = cltTemp[0] == '' || isNaN(cltTemp[0]) ? 0 : cltTemp[0];
-
-	var table = document.getElementById("table-import-details");
-	let tableBodyDoc = document.getElementById('listDoc');
-
-	var miModalImport = bootstrap.Modal.getInstance(document.getElementById('modalImport'));
-
-	var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-	var correlative = document.getElementById('correlative').value;
-	let clienImport = idData;
-	var numberExport = [];
-	var tipodocExport = [];
-
-	var json = [];
-	let seller;
-
-	for (var i = 0; i < rows.length; i++) {
-		var row = rows[i];
-
-		var checkbox = row.querySelector(".checkProducts");
-
-
-
-		if (checkbox.checked) {
-			const inputElement = row.getElementsByTagName("input")[1];
-			const tempCanxUnd = parseFloat(inputElement.getAttribute('data-canxund'));
-			const temCj = parseFloat(row.getElementsByTagName("input")[1].value) || 0;
-			const temUnd = parseFloat(inputElement.value) || 0;
-			const pdtCode = inputElement.getAttribute('data-pdt');
-			const und = inputElement.hasAttribute('data-und') ? inputElement.getAttribute('data-und') : '';
-			const canxund = inputElement.hasAttribute('data-canxund') ? inputElement.getAttribute('data-canxund') : '';
-			const id = inputElement.getAttribute('data-id');
-			const costot = inputElement.getAttribute('data-costot');
-			const costop = inputElement.getAttribute('data-costop');
-			const list = inputElement.getAttribute('data-list');
-			const poriva = inputElement.getAttribute('data-poriva');
-			const tiv = inputElement.getAttribute('data-tiv');
-			const metcos = inputElement.getAttribute('data-metcos');
-			const description = inputElement.getAttribute('data-description');
-			const costomer = inputElement.getAttribute('data-costomer');
-			const costou = inputElement.getAttribute('data-costou');
-			const base = inputElement.getAttribute('data-base');
-			const hti = inputElement.getAttribute('data-hti');
-			const tipodocData = inputElement.getAttribute('data-tipodoc');
-			const numberData = inputElement.getAttribute('data-number');
-			const lot = temUnd;
-
-			seller = inputElement.getAttribute('data-seller');
-
-			numberExport.push(numberData);
-			tipodocExport.push(tipodocData);
-
-
-
-			json.push({ code: pdtCode, amount: lot, und: und, canxund: canxund, ids: id, costot: costot, costop: costop, list: list, poriva: poriva, tiv: tiv, metcos: metcos, description: description, costomer: costomer, costou: costou, base: base, hti: hti, tipodoc: tipodocData, number: numberData });
-		}
-
-	}
-
-
-	if (json.length == 0) {
-		console.log("No hay nada");
-		return 0;
-	}
-
-
-	const tipodocUnic = Array.from(new Set(tipodocExport));
-	const numberUnic = Array.from(new Set(numberExport));
-
-
-	var tipodoOrigen = tipodocUnic.join(',');
-	var numberOrigen = numberUnic.join(',');
-
-
-
-	forData.append("PDC_NUMERO", correlative);
-	forData.append("PDC_TDT_CODIGO", 'PDA');
-	forData.append("PDC_SCS_CODIGO", "000001");
-	forData.append("PDC_VEN_CODIGO", seller);
-	forData.append("PDC_CLT_CODIGO", clienImport);
-	forData.append("PDC_TDT_ORIGEN", tipodoOrigen);
-	forData.append("PDC_NUMERO_ORIGEN", numberOrigen);
-
-	forData.append("PMV_DATA", JSON.stringify(json));
-
-
-	let newDiv = '';
-	var request = (window.XMLHttpRequest) ?
-		new XMLHttpRequest() :
-		new ActiveXObject('Microsoft.XMLHTTP');
-
-	var ajaxUrl = base_url + '/AutoVenta/insertDetailsImport';
-
-
-	request.open("POST", ajaxUrl, true);
-	request.send(forData);
-	request.onreadystatechange = function () {
-
-		if (request.readyState != 4) return;
-		if (request.status == 200) {
-			var objData = JSON.parse(request.responseText);
-
-			document.getElementById('list-items').innerHTML = '';
-
-			let mainCorrelative = document.getElementById('main-correlative');
-			if (mainCorrelative) {
-				try {
-					mainCorrelative.value = objData[0].DCL_NUMERO;
-					document.getElementById('correlative').value = objData[0].DCL_NUMERO;
-				} catch (error) {
-					console.log('Error al asignar el valor al elemento:');
-				}
-			} else {
-				console.log('no existe.');
-			}
-
-			objData.forEach(function (element, index) {
-
-				let href = `${base_url}/AutoVenta/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
-
-				newDiv += `<a href="${href}" data-pdt="${element.MCL_UPP_PDT_CODIGO}" data-und="${element.MCL_UPP_UND_ID}" data-exiscj="${element.CAJA}" data-exisund="${element.UND_KG}" data-canxund="${element.PDT_LICLTSCAJA}" data-valor="${element.CAJA}" data-number="${element.DCL_NUMERO}" data-det="${element.DCL_CLT_CODIGO}" onclick="setInfoDetails(this)">
-			<li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg details-odc-style p-1 ">
-				<div class="d-flex align-items-center">
-					<button onclick="ignoreHeavy(this)" class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 p-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-lg">add_shopping_cart</i></button>
-					<div class="d-flex flex-column">
-						<h6 class="mb-1 text-dark text-sm">${element.MCL_UPP_PDT_CODIGO} <span class="mx-3 badge rounded-pill bg-warning text-light"> ${element.MCL_UPP_UND_ID}</span></h6>
-						<span class="text-xs">${element.PDT_DESCRIPCION}</span>
-					</div>
-				</div>
-				<div class="d-flex fs-6 align-items-center text-sm font-weight-bold">
-					<span id="exis-cj" class="text-success">  ${element.CAJA}</span>
-					|
-					<span id="exis-und" class="text-success"> ${element.UND_KG} </span>
-					  |
-				  <span id="exis-pesado" class="text-warning"> 0.00 </span>
-				</div>
-			</li>
-		</a>`;
-
-			});
-
-
-
-			tableBodyDoc.innerHTML = '';
-			miModalImport.hide();
-
-			Swal.fire({
-				position: "center",
-				icon: "success",
-				title: "Exportado correctamente.",
-				showConfirmButton: false,
-				timer: 1000
-			});
-
-			document.getElementById('list-items').insertAdjacentHTML('beforeend', newDiv);
-
-
-
-
-		} else {
-
-
-
-		}
-
-	}
-
-}*/
 
 async function saveImport() {
 	var forData = new FormData();
@@ -2011,7 +1833,7 @@ async function saveImport() {
 		if (response.ok) {
 			let objData = await response.json();
 
-			console.log(objData);
+			
 
 			document.getElementById('list-items').innerHTML = '';
 
@@ -2042,8 +1864,8 @@ async function saveImport() {
                                 </div>
                             </div>
                             <div class="d-flex fs-6 align-items-center text-sm font-weight-bold">
-                                <span id="exis-cj" class="text-success">${element.CAJA}</span> |
-                                <span id="exis-und" class="text-success">${element.UND_KG}</span> |
+                                <span id="exis-cj" >${element.CAJA}</span> |
+                                <span id="exis-und" >${element.UND_KG}</span> |
                                 <span id="exis-pesado" class="text-warning">0.00</span>
                             </div>
                         </li>
@@ -2159,9 +1981,9 @@ function saveDocument() {
 
 async function saveDoc() {
 	var forData = new FormData();
-	var table = document.getElementById("tableProducts");
+    var table = document.getElementById("tableProducts");
 	let tableBodyDoc = document.getElementById('listDoc');
-	var miModal = bootstrap.Modal.getInstance(document.getElementById('modalProducts'));
+	//var miModal = bootstrap.Modal.getInstance(document.getElementById('modalProducts'));
 	var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
 	var correlative = document.getElementById('correlative').value;
 	let idDataTemp = document.getElementById('idData').value.split('|');
@@ -2263,8 +2085,7 @@ async function saveDoc() {
 				console.log('no existe.');
 			}
 
-			console.log(objData);
-
+			
 			objData.forEach(function (element, index) {
 				let styleType = element.DCL_DESCRIDOWN == '1' ? 'light' : 'success';
 				let styleClass = element.PESADO == 0 ? "details-odc-style" : "details-odc-style-weight";
@@ -2280,9 +2101,9 @@ async function saveDoc() {
                         </div>
                     </div>
                     <div class="d-flex fs-6 align-items-center text-sm font-weight-bold">
-                        <span id="exis-cj" class="text-${styleType}">  ${element.CAJA}</span>
+                        <span id="exis-cj" >  ${element.CAJA}</span>
                         |
-                        <span id="exis-und" class="text-${styleType}"> ${element.UND_KG} </span>
+                        <span id="exis-und"> ${element.UND_KG} </span>
                         |
                         <span id="exis-pesado" class="text-warning"> ${element.PESADO} </span>
                     </div>
@@ -2291,7 +2112,7 @@ async function saveDoc() {
 			});
 
 			tableBodyDoc.innerHTML = '';
-			miModal.hide();
+			//miModal.hide();
 
 			Swal.fire({
 				position: "center",
@@ -2377,10 +2198,12 @@ function closeCount() {
 			let cltCode = document.getElementById('pdc_clt').value;
 			let idDataTemp = document.getElementById('idData').value.split('|');
 			let seller = idDataTemp[0];
+		
 
 			details.append('NUMBER', number);
 			details.append('CLIENT', cltCode);
 			details.append('VENDEDOR', seller);
+			
 
 			var request = (window.XMLHttpRequest) ?
 				new XMLHttpRequest() :
@@ -2628,12 +2451,12 @@ function clikRowTable() {
 		var target = event.target;
 		var row = target.closest('tr');
 
-		if (row && row.parentNode.tagName === 'TBODY') { // Asegura que el clic sea en una fila dentro del cuerpo de la tabla
-			var checkbox = row.querySelector('input[type="checkbox"]'); // Selecciona el checkbox dentro de la fila
-			row.classList.add('details-odc-style');
-			console.log(row);
+		if (row && row.parentNode.tagName === 'TBODY') {
+			var checkbox = row.querySelector('input[type="checkbox"]');
+			
 			if (checkbox) {
-				checkbox.checked = !checkbox.checked; // Cambia el estado del checkbox
+				checkbox.checked = !checkbox.checked; 
+				searchProduct(checkbox);
 			}
 		}
 	});

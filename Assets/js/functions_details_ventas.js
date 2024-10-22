@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	btnSaveImport.addEventListener("click", saveImport);
 
 
-	const socket = new WebSocket('ws://192.168.10.181:8080');
+	const socket = new WebSocket(`ws://${url_sockets}:8080`);
 
 	socket.addEventListener('message', function (event) {
 
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
+/*
 
 	socket.addEventListener('open', function (event) {
 		socket.send('Hola servidor!');
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		setTimeout(function () {
 			socket = new WebSocket('ws://192.168.10.181:8080');  // Intenta reconectar
 		}, 5000);  // Espera 5 segundos antes de intentar
-	});
+	});*/
 
 
 
@@ -200,12 +200,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 	setInterval(hora, 1000);
-
-	//setInterval(getWeight, 1000);
-
-
 	eventPressEnter();
-
+	clikRowTable();
 
 }, false);
 
@@ -1370,8 +1366,8 @@ async function aggProducts() {
 		populateTable(data);
 		initializeDataTable();
 
-		var miModal = new bootstrap.Modal(document.getElementById('modalProducts'));
-		miModal.show();
+		//var miModal = new bootstrap.Modal(document.getElementById('modalProducts'));
+		//miModal.show();
 
 
 	} catch (error) {
@@ -2419,153 +2415,6 @@ function saveDocument() {
 
 }
 
-/*
-function saveDoc() {
-
-	var forData = new FormData();
-	var table = document.getElementById("tableProducts");
-	let tableBodyDoc = document.getElementById('listDoc');
-
-	var miModal = bootstrap.Modal.getInstance(document.getElementById('modalProducts'));
-
-	var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-	var correlative = document.getElementById('correlative').value;
-	let cltTemp = document.getElementById('idClient').value.split('|');
-
-	let clienImport = cltTemp[0];
-	let seller = cltTemp[1];
-	var json = [];
-
-
-	dataTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
-		var row = this.node();
-		var checkbox = $(row).find(".checkProductsNew");
-
-		if (checkbox.is(':checked')) {
-			console.log(row.getElementsByTagName("input")[1]);
-			const inputElement = $(row).find("input")[1];
-			const tempCanxUnd = parseFloat(inputElement.getAttribute('data-canxund'));
-			const pdtCode = inputElement.getAttribute('data-pdt');
-			const und = inputElement.hasAttribute('data-und') ? inputElement.getAttribute('data-und') : '';
-			const canxund = inputElement.hasAttribute('data-canxund') ? inputElement.getAttribute('data-canxund') : '';
-			const costot = inputElement.getAttribute('data-costot');
-			const costop = inputElement.getAttribute('data-costop');
-			const list = inputElement.getAttribute('data-list');
-			const poriva = inputElement.getAttribute('data-poriva');
-			const tiv = inputElement.getAttribute('data-tiv');
-			const metcos = inputElement.getAttribute('data-metcos');
-			const description = inputElement.getAttribute('data-description');
-			const costomer = inputElement.getAttribute('data-costomer');
-			const costou = inputElement.getAttribute('data-costou');
-			const base = inputElement.getAttribute('data-base');
-			const hti = inputElement.getAttribute('data-hti');
-
-			json.push({ code: pdtCode, amount: 1, und: und, canxund: canxund, ids: 0, costot: costot, costop: costop, list: list, poriva: poriva, tiv: tiv, metcos: metcos, description: description, costomer: costomer, costou: costou, base: base, hti: hti });
-		}
-
-	});
-
-
-	if (json.length == 0) {
-		console.log("No hay nada");
-		return 0;
-	}
-
-
-
-	forData.append("PDC_NUMERO", correlative);
-	forData.append("PDC_VEN_CODIGO", seller);
-	forData.append("PDC_TDT_CODIGO", 'PDA');
-	forData.append("PDC_SCS_CODIGO", "000001");
-	forData.append("PDC_CLT_CODIGO", clienImport);
-	forData.append("PMV_DATA", JSON.stringify(json));
-
-
-	let newDiv = '';
-	var request = (window.XMLHttpRequest) ?
-		new XMLHttpRequest() :
-		new ActiveXObject('Microsoft.XMLHTTP');
-
-	var ajaxUrl = base_url + '/Ventas/insertDetailsNew';
-
-
-	request.open("POST", ajaxUrl, true);
-	request.send(forData);
-	request.onreadystatechange = function () {
-
-		if (request.readyState != 4) return;
-		if (request.status == 200) {
-			var objData = JSON.parse(request.responseText);
-
-			document.getElementById('list-items').innerHTML = '';
-
-			let mainCorrelative = document.getElementById('main-correlative');
-			if (mainCorrelative) {
-				try {
-					mainCorrelative.value = objData[0].DCL_NUMERO;
-					document.getElementById('correlative').value = objData[0].DCL_NUMERO;
-				} catch (error) {
-					console.log('Error al asignar el valor al elemento:');
-				}
-			} else {
-				console.log('no existe.');
-			}
-
-			objData.forEach(function (element, index) {
-
-				let styleType = element.DCL_DESCRIDOWN == '1' ? 'light' : 'success';
-				let styleClass = element.PESADO == 0 ? "details-odc-style" : "details-odc-style-weight";
-				let href = `${base_url}/Ventas/content?id=${element.DCL_NUMERO}&cl=${element.DCL_CLT_CODIGO}&pdt=${element.MCL_UPP_PDT_CODIGO}";`;
-
-				newDiv += `<a href="${href}" data-pdt="${element.MCL_UPP_PDT_CODIGO}" data-und="${element.MCL_UPP_UND_ID}" data-exiscj="${element.CAJA}" data-exisund="${element.UND_KG}" data-canxund="${element.PDT_LICLTSCAJA}" data-valor="${element.CAJA}" data-number="${element.DCL_NUMERO}" data-det="${element.DCL_CLT_CODIGO}" onclick="setInfoDetails(this)">
-			<li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg ${styleClass} p-1 ">
-				<div class="d-flex align-items-center">
-					<button onclick="ignoreHeavy(this)" class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 p-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-lg">add_shopping_cart</i></button>
-					<div class="d-flex flex-column">
-						<h6 class="mb-1 text-dark text-sm">${element.MCL_UPP_PDT_CODIGO} <span class="mx-3 badge rounded-pill bg-warning text-light"> ${element.MCL_UPP_UND_ID}</span></h6>
-						<span class="text-xs">${element.PDT_DESCRIPCION}</span>
-					</div>
-				</div>
-				<div class="d-flex fs-6 align-items-center text-sm font-weight-bold">
-					<span id="exis-cj" class="text-${styleType}">  ${element.CAJA}</span>
-					|
-					<span id="exis-und" class="text-${styleType}"> ${element.UND_KG} </span>
-					  |
-				  <span id="exis-pesado" class="text-warning"> ${element.PESADO} </span>
-				</div>
-			</li>
-		</a>`;
-
-			});
-
-
-
-			tableBodyDoc.innerHTML = '';
-			miModal.hide();
-
-			Swal.fire({
-				position: "center",
-				icon: "success",
-				title: "Creado correctamente.",
-				showConfirmButton: false,
-				timer: 1000
-			});
-
-			document.getElementById('list-items').insertAdjacentHTML('beforeend', newDiv);
-
-			const checkboxes = document.querySelectorAll('.checkProductsNew');
-			checkboxes.forEach(checkbox => checkbox.checked = false);
-			//document.getElementById('btnAggProducts').classList.add('d-none');
-
-
-		} else {
-
-
-
-		}
-
-	}
-}*/
 
 
 async function saveDoc() {
@@ -2698,7 +2547,7 @@ async function saveDoc() {
 			});
 
 			tableBodyDoc.innerHTML = '';
-			miModal.hide();
+			//miModal.hide();
 
 			Swal.fire({
 				position: "center",
@@ -3022,4 +2871,25 @@ function recalculationHeavy() {
 
 	setStyleWeight(pdtCodigo, weightTotal);
 
+}
+
+
+function clikRowTable() {
+
+	var table = document.getElementById('tableProducts');
+
+
+	table.addEventListener('click', function (event) {
+		var target = event.target;
+		var row = target.closest('tr');
+
+		if (row && row.parentNode.tagName === 'TBODY') {
+			var checkbox = row.querySelector('input[type="checkbox"]');
+			
+			if (checkbox) {
+				checkbox.checked = !checkbox.checked; 
+				searchProduct(checkbox);
+			}
+		}
+	});
 }

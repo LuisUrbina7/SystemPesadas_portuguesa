@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	var keyupOne = document.getElementById('weight-value');
 	var keyupTwo = document.getElementById('weight-value-secondary');
 
-	const socket = new WebSocket('ws://localhost:8080');
+	const socket = new WebSocket(`ws://${url_sockets}:8080`);
 
 	socket.addEventListener('message', function (event) {
 

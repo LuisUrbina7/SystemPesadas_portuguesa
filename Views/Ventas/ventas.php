@@ -28,10 +28,10 @@
                         <tbody id="table-sale">
 
 
-                            <?php foreach ($data['page_data'] as $details) {  
-                                $status =  $details['DCL_ACTIVO'] == 1? 'FINALIZADO' : 'PROCESO';
-                                $statusStyle =  $details['DCL_ACTIVO'] == 1? 'success' : 'warning';
-                                ?>
+                            <?php foreach ($data['page_data'] as $details) {
+                                $status =  $details['DCL_ACTIVO'] == 1 ? 'FINALIZADO' : 'PROCESO';
+                                $statusStyle =  $details['DCL_ACTIVO'] == 1 ? 'success' : 'warning';
+                            ?>
                                 <tr class="list-odc-style">
                                     <td>
                                         <a href="<?= base_url() ?>/Ventas/details?id=<?= $details['DCL_NUMERO'] ?>&cl=<?= $details['DCL_CLT_CODIGO'] ?>" class="text-decoration-none">
@@ -109,7 +109,10 @@
                                     </td>
 
                                     <td class="align-middle text-center">
-                                        <button class="btn btn-danger shadow-danger p-2 mb-0" onclick="sale(this)" data-scs="<?= $details['DCL_SCS_CODIGO'] ?>" data-clt="<?= $details['DCL_CLT_CODIGO'] ?>" data-number="<?= $details['DCL_NUMERO'] ?>"> <i class="material-icons  text-lg">delete_forever</i></button>
+
+                                        <?php if ($status != "FINALIZADO") { ?>
+                                            <button class="btn btn-danger shadow-danger p-2 mb-0" onclick="sale(this)" data-scs="<?= $details['DCL_SCS_CODIGO'] ?>" data-clt="<?= $details['DCL_CLT_CODIGO'] ?>" data-number="<?= $details['DCL_NUMERO'] ?>"> <i class="material-icons  text-lg">delete_forever</i></button>
+                                        <?php  } ?>
                                     </td>
 
                                 </tr>

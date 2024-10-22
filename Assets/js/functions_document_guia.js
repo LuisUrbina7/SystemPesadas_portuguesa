@@ -69,6 +69,12 @@ function activeTrans(data) {
 							data.classList.add('btn-warning');
 							data.onclick = null;
 
+							let btnOpenGuia = data.parentNode.parentNode.parentNode.cells[4].querySelector('.btn-open-guia');
+
+							if (btnOpenGuia) {
+
+								btnOpenGuia.classList.add('d-none');
+							}
 
 						} else {
 							data.classList.add('btn-success');
@@ -76,12 +82,18 @@ function activeTrans(data) {
 
 
 							let btnSincro = data.parentNode.parentNode.parentNode.cells[5].querySelector('.btn-sincro');
+							let btnOpenGuia = data.parentNode.parentNode.parentNode.cells[4].querySelector('.btn-open-guia');
 
 							btnSincro.onclick = function () {
 								sincroGuia(btnSincro);
 							}
 							btnSincro.classList.remove('btn-success-previo');
 							btnSincro.classList.add('btn-light');
+							
+							if (btnOpenGuia) {
+
+								btnOpenGuia.classList.add('d-none');
+							}
 						}
 
 

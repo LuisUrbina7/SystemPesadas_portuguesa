@@ -5,6 +5,11 @@ function base_url()
 {
   return BASE_URL;
 }
+
+function url_sockets()
+{
+  return URL_SOCKETS;
+}
     //Retorla la url de Assets
 function media()
 {

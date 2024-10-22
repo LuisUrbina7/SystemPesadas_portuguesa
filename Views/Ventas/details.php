@@ -55,45 +55,35 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
 
 <!----------------- MODAL PARA LISTADO DE PRODUCTOS----------------->
 
-<div class="modal fade" id="modalProducts" tabindex="-1" aria-modal="true" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content dark-version">
-            <div class="modal-header p-2 justify-content-center">
-                <!--    <h5 class="modal-title" id="exampleModalLabel"></h5>-->
-                <button type="button" class="btn btn-primary m-0 px-5 " id="btn-saveDoc"> <i class="material-icons opacity-10">data_saver_on </i></button>
-                <small class="position-absolute text-end d-none" style="left: 0px;" id="banner-load"> Cargando, por favor espere.....</small>
-                <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-            </div>
-            <div class="modal-body p-2">
+<div class="offcanvas offcanvas-end modal-auto-width dark-version-offcanvas" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="modalProducts" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-header py-0 position-relative">
+        <button type="button" class="btn btn-primary m-0 px-5 " id="btn-saveDoc"> <i class="material-icons opacity-10">data_saver_on </i></button>
+        <small class="position-absolute text-end d-none" style="left: 0px;" id="banner-load"> Cargando, por favor espere.....</small>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body py-0">
+        <div class="table-responsive w-100 ">
 
-                <div class="table-responsive w-100 ">
+            <table class="table table-hover" id="tableProducts">
+                <thead>
+                    <tr>
+                        <th class="font-weight-light py-1">#</th>
+                        <th class="font-weight-light py-1">Codigo</th>
+                        <th class="font-weight-light py-1">Descripción</th>
+                        <th class="font-weight-light py-1">Precio</th>
+                        <th class="font-weight-light py-1">Tiv</th>
+                        <th class="font-weight-light py-1">Exis</th>
+                        <th class="font-weight-light py-1">Lista</th>
 
-                    <table class="table table-hover" id="tableProducts">
-                        <thead>
-                            <tr>
-                                <th class="font-weight-light py-1">#</th>
-                                <th class="font-weight-light py-1">Codigo</th>
-                                <th class="font-weight-light py-1">Descripción</th>
-                                <th class="font-weight-light py-1">Precio</th>
-                                <th class="font-weight-light py-1">Tiv</th>
-                                <th class="font-weight-light py-1">Exis</th>
-                                <th class="font-weight-light py-1">Lista</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
 
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody">
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer p-2">
-
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
 <!----  MODAL PARA AGREGAR CANASTAS -------------->
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -177,7 +167,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                             <h6 class="mb-0">Movimientos </h6>
                         </div>
                         <div class="col-md-6 d-flex justify-content-start justify-content-md-end align-items-center">
-                            <button type="button" id="btnAggProducts" class="btn btn-secondary py-2 px-3 m-0 mx-3 justify-content-center d-flex d-none" onclick="aggProducts()">
+                            <button type="button" id="btnAggProducts" class="btn btn-secondary py-2 px-3 m-0 mx-3 justify-content-center d-flex d-none" onclick="aggProducts()" data-bs-toggle="offcanvas" data-bs-target="#modalProducts" aria-controls="offcanvasScrolling">
                                 +
                             </button>
 

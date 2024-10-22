@@ -2,34 +2,34 @@
 $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]['DCL_PDA_CONTEO'] : 0;
 ?>
 
-<div class="offcanvas offcanvas-end modal-auto-width dark-version" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="modalProducts" aria-labelledby="offcanvasScrollingLabel">
-  <div class="offcanvas-header py-0 position-relative">
-  <button type="button" class="btn btn-primary m-0 px-5 " id="btn-saveDoc"> <i class="material-icons opacity-10">data_saver_on </i></button>
-  <small class="position-absolute text-end d-none" style="left: 0px;" id="banner-load"> Cargando, por favor espere.....</small>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body py-0">
-  <div class="table-responsive w-100 ">
+<div class="offcanvas offcanvas-end modal-auto-width dark-version-offcanvas" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="modalProducts" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-header py-0 position-relative">
+        <button type="button" class="btn btn-primary m-0 px-5 " id="btn-saveDoc"> <i class="material-icons opacity-10">data_saver_on </i></button>
+        <small class="position-absolute text-end d-none" style="left: 0px;" id="banner-load"> Cargando, por favor espere.....</small>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body py-0">
+        <div class="table-responsive w-100 ">
 
-<table class="table table-hover" id="tableProducts">
-    <thead>
-        <tr>
-            <th class="font-weight-light py-1">#</th>
-            <th class="font-weight-light py-1">Codigo</th>
-            <th class="font-weight-light py-1">Descripción</th>
-            <th class="font-weight-light py-1">Precio</th>
-            <th class="font-weight-light py-1">Tiv</th>
-            <th class="font-weight-light py-1">Exis</th>
-            <th class="font-weight-light py-1">Lista</th>
+            <table class="table table-hover" id="tableProducts">
+                <thead>
+                    <tr>
+                        <th class="font-weight-light py-1">#</th>
+                        <th class="font-weight-light py-1">Codigo</th>
+                        <th class="font-weight-light py-1">Descripción</th>
+                        <th class="font-weight-light py-1">Precio</th>
+                        <th class="font-weight-light py-1">Tiv</th>
+                        <th class="font-weight-light py-1">Exis</th>
+                        <th class="font-weight-light py-1">Lista</th>
 
-        </tr>
-    </thead>
-    <tbody id="productsTableBody">
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
 
-    </tbody>
-</table>
-</div>
-  </div>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 
@@ -76,7 +76,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
             </div>
             <div class="modal-footer p-2 border-top-0">
 
-            <button type="button" class="btn btn-primary m-0 py-1" id="btn-savImport">Guardar</button>
+                <button type="button" class="btn btn-primary m-0 py-1" id="btn-savImport">Guardar</button>
             </div>
         </div>
     </div>
@@ -173,7 +173,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                     <div class="card">
                         <div class="card-header  py-2 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center rounded bg-success px-2">
-                                <small>N° </small><input type="number" class="form-control inputs-disable" value="<?= !empty($data['page_data'][0]['DCL_NUMERO']) ? $data['page_data'][0]['DCL_NUMERO'] :$data['page_correlative'] ?>" id="main-correlative">
+                                <small>N° </small><input type="number" class="form-control inputs-disable" value="<?= !empty($data['page_data'][0]['DCL_NUMERO']) ? $data['page_data'][0]['DCL_NUMERO'] : $data['page_correlative'] ?>" id="main-correlative">
                             </div>
                             <div class="w-50">
                                 <select class="js-example-basic-single w-100" name="state" id="idData">
@@ -246,9 +246,9 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                                                 </div>
                                             </div>
                                             <div class="d-flex fs-6 align-items-center text-sm font-weight-bold">
-                                                <span id="exis-cj" class="text-<?= $registerType ?>"> <?= number_format($details['CAJA'], 2) ?></span>
+                                                <span id="exis-cj" > <?= number_format($details['CAJA'], 2) ?></span>
                                                 |
-                                                <span id="exis-und" class="text-<?= $registerType ?>"> <?= number_format($details['UND_KG'], 2) ?> </span>
+                                                <span id="exis-und" > <?= number_format($details['UND_KG'], 2) ?> </span>
                                                 |
                                                 <span id="exis-pesado" class="text-warning"> <?= number_format($details['PESADO'], 2) ?> </span>
                                             </div>
@@ -470,7 +470,7 @@ $conteo = isset($data['page_data'][0]['DCL_PDA_CONTEO']) ? $data['page_data'][0]
                             <div class="row">
                                 <div class="col-6 d-flex align-items-center">
                                     <h6 class="mb-0">Listado</h6>
-                                    <a href="#" class="btn btn-danger rounded-circle mx-3 m-0 p-2" id="label-spinner-save" onclick="ticketByHeavy()"> 
+                                    <a href="#" class="btn btn-danger rounded-circle mx-3 m-0 p-2" id="label-spinner-save" onclick="ticketByHeavy()">
                                         <i class="material-icons opacity-10">picture_as_pdf</i>
                                     </a>
                                 </div>

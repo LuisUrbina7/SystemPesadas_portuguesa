@@ -5,7 +5,7 @@ use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 
-class PedidosPollo extends Controllers
+class PedidosPK extends Controllers
 {
 	public function __construct()
 	{
@@ -29,7 +29,7 @@ class PedidosPollo extends Controllers
 		$data['page_name'] = "Document";
 		$data['page_data'] = $this->model->getDocument();
 
-		$data['page_functions_js'] = "functions_pedidos_pollo.js";
+		$data['page_functions_js'] = "functions_pedidospk.js";
 		
 	
 		
@@ -45,7 +45,7 @@ class PedidosPollo extends Controllers
 		$data['page_tag'] = "Details";
 		$data['page_title'] = "Details";
 		$data['page_name'] = "Details";
-		$data['page_data'] = $this->model->getDetails($_GET['id'], $_GET['vd'], $_SESSION['userData']['OPE_AMC_PESADA']);
+		$data['page_data'] = $this->model->getDetails($_GET['id'], $_GET['vd'], $_SESSION['userData']['OPE_AMC_PESADA'],$_GET['tdoc']);
 
 		$data['page_dcl_numero'] = !isset($_GET['id']) ? 'S/R' : $_GET['id'];
 		$data['page_ven_codigo'] = !isset($_GET['vd']) ? 'S/R' : $_GET['vd'];
@@ -54,7 +54,7 @@ class PedidosPollo extends Controllers
 		$data['page_amc'] = $this->model->getAmc();
 
 
-		$data['page_functions_js'] = "functions_details_pedidos_pollo.js";
+		$data['page_functions_js'] = "functions_details_pedidospk.js";
 
 
 		$this->views->getView($this, "details", $data);
@@ -271,15 +271,15 @@ class PedidosPollo extends Controllers
 		if ($_POST) {
 			$numero = $_POST['NUMBER'];
 			$codigo = $_POST['PROVIDER'];
-			$tipo = "PEDW";
+			$tdoc =  $_POST['TIPO'];
 
 			try {
 
-				$validate = $this->model->validateDocumento($numero, $codigo);
+				$validate = $this->model->validateDocumento($numero, $codigo,$tdoc);
 
 				if ($validate) {
 
-					$update = $this->model->callUpdateAmount($numero, $codigo,$tipo);
+					$update = $this->model->callUpdateAmount($numero, $codigo,$tdoc);
 
 
 					$arrResponse = array('status' => true, 'msg' => 'Cerrado correctamente.');
@@ -704,7 +704,8 @@ class PedidosPollo extends Controllers
 
 		$arrData = $this->model->generatePdf($dcgNumero, $vnd);
 
-
+		
+		
 		try {
 
 			if (!empty($arrData)) {

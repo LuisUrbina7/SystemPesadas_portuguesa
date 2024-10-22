@@ -78,11 +78,11 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link text-white position-relative" href="<?php echo base_url() ?>/PedidosPollo/document" id="chicken-module">
+              <a class="nav-link text-white position-relative" href="<?php echo base_url() ?>/PedidosPK/document" id="chicken-module">
                 <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i class="material-icons opacity-10">emoji_transportation</i>
                 </div>
-                <span class="nav-link-text ms-1">Ordenes Pollo</span>
+                <span class="nav-link-text ms-1">Ordenes Pesados</span>
 
                 <div id="chicken-label" class="position-absolute">
 

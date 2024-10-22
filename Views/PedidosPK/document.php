@@ -5,7 +5,7 @@
         <div class="card my-4">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                 <div class="bg-gradient-warning shadow-success border-radius-lg pt-4 pb-3">
-                    <h6 class="text-white text-capitalize ps-3"> Pedidos solo Pollo </h6>
+                    <h6 class="text-white text-capitalize ps-3"> Pedidos </h6>
                 </div>
             </div>
 
@@ -39,11 +39,11 @@
                             
                             <?php foreach ($data['page_data'] as $details) {
                                 $icon = $details['DCL_VEN_CODIGO'] == '052' ? 'import_export' : 'emoji_transportation';
-                                $iconType = $details['INDICADOR'] == 0 ? '🐔' : '🚛';
+                                $iconType = $details['INDICADOR'] == 0 ? '📊' : '🚛';
                             ?>
                                 <tr class="list-odc-style">
                                     <td>
-                                        <a href="<?= base_url() ?>/PedidosPollo/details?id=<?= $details['DCL_NUMERO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&ind=<?= $details['INDICADOR'] ?>" class="text-decoration-none">
+                                        <a href="<?= base_url() ?>/PedidosPK/details?id=<?= $details['DCL_NUMERO'] ?>&tdoc=<?= $details['DCL_TDT_CODIGO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&ind=<?= $details['INDICADOR'] ?>" class="text-decoration-none">
                                             <div class="d-flex px-2 py-1">
                                                 <div class="p-2 btn btn-light rounded-circle d-flex me-2 m-0">
                                                     <i class="material-icons opacity-10"><?= $iconType ?></i>

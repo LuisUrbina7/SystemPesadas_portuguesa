@@ -782,10 +782,10 @@ class VentasModel extends Mysql
         return $execute;
     }
 
-    public function updateClose($numero, $clt, $scs)
+    public function updateClose($numero, $clt, $scs,$type)
     {
 
-        $call = "CALL UPDATE_PESADAS('$clt', '$numero', '$scs')";
+        $call = "CALL UPDATE_PESADAS('$clt', '$numero', '$scs','$type')";
 
 
         $execute = $this->select($call);
@@ -794,10 +794,10 @@ class VentasModel extends Mysql
 
 
 
-    public function deleteDocument($numero, $clt, $scs)
+    public function deleteDocument($numero, $clt, $scs,$type)
     {
 
-        $callDelete = "CALL DELETE_PESADAS('$numero', '$clt','$scs')";
+        $callDelete = "CALL DELETE_PESADAS('$numero', '$clt','$scs','$type')";
 
 
         $execute = $this->select($callDelete);

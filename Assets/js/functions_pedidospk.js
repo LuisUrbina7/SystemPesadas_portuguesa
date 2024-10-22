@@ -45,7 +45,7 @@ function activeTrans(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/activeTrans?id=' + guia + '&vd=' + vnd;
+			var ajaxUrl = base_url + '/PedidosPK/activeTrans?id=' + guia + '&vd=' + vnd;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();
@@ -142,7 +142,7 @@ function sincroGuia(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/sincroGuia?id=' + guia + '&vd=' + vnd;
+			var ajaxUrl = base_url + '/PedidosPK/sincroGuia?id=' + guia + '&vd=' + vnd;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();
@@ -209,7 +209,7 @@ function viewPdf(data) {
 
 	var ajaxUrl =
 		base_url +
-		"/PedidosPollo/viewPdf?id=" +
+		"/PedidosPK/viewPdf?id=" +
 		numero +
 		"&pv=" +
 		codigo +
@@ -244,7 +244,7 @@ function ticket(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/ticket?id=' + numero + '&vd=' + codigo;
+			var ajaxUrl = base_url + '/PedidosPK/ticket?id=' + numero + '&vd=' + codigo;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();
@@ -321,7 +321,7 @@ function ticketGeneral(data) {
 				new XMLHttpRequest() :
 				new ActiveXObject('Microsoft.XMLHTTP');
 
-			var ajaxUrl = base_url + '/PedidosPollo/ticketGeneral?id=' + numero + '&vd=' + codigo + '&scs=' + sucursal;
+			var ajaxUrl = base_url + '/PedidosPK/ticketGeneral?id=' + numero + '&vd=' + codigo + '&scs=' + sucursal;
 
 			request.open("GET", ajaxUrl, true);
 			request.send();

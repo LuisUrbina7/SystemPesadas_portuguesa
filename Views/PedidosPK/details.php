@@ -41,7 +41,7 @@ headerAdmin($data); ?>
                 <div class="col-6">
                     <div class="card w-75">
                         <div class="card-header  py-2 text-center bg-warning">
-                            <h6 class=" mb-0"><?= $data['page_data'][0]['VEN_NOMBRE'] ?> - <?= $data['page_data'][0]['DCL_NUMERO'] ?> 🐔</h6>
+                            <h6 class=" mb-0"><?= $data['page_data'][0]['VEN_NOMBRE'] ?> - <?= $data['page_data'][0]['DCL_NUMERO'] ?> 📊</h6>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ headerAdmin($data); ?>
                                 $styleClass =  $details['PESADO'] == 0 ? "details-odc-style" :   "details-odc-style-weight";
                                 $valor = $details['MCL_UPP_UND_ID'] == 'UND' ? number_format($details['CAJA'], 2) : number_format($details['UND_KG'], 2);
                             ?>
-                                <a href="<?= base_url() ?>/PedidosPollo/content?id=<?= $details['DCL_NUMERO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&pdt=<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-pdt="<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-und="<?= $details['MCL_UPP_UND_ID'] ?>" data-exiscj="<?= number_format($details['CAJA'], 2) ?>" data-canxund="<?= $details['PDT_LICLTSCAJA'] ?>" data-valor="<?= $valor ?>" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" onclick="setInfoDetails(this)">
+                                <a href="<?= base_url() ?>/PedidosPK/content?id=<?= $details['DCL_NUMERO'] ?>&vd=<?= $details['DCL_VEN_CODIGO'] ?>&pdt=<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-pdt="<?= $details['MCL_UPP_PDT_CODIGO'] ?>" data-und="<?= $details['MCL_UPP_UND_ID'] ?>" data-exiscj="<?= number_format($details['CAJA'], 2) ?>" data-exisUND="<?= number_format($details['UND_KG'], 2) ?>"  data-canxund="<?= $details['PDT_LICLTSCAJA'] ?>" data-valor="<?= $valor ?>" data-number="<?= $details['DCL_NUMERO'] ?>" data-det="<?= $details['DCL_VEN_CODIGO'] ?>" onclick="setInfoDetails(this)">
                                     <li class="list-group-item  d-flex justify-content-between  mb-2 border-radius-lg <?= $styleClass ?> p-1">
                                         <div class="d-flex align-items-center">
                                             <button onclick="ignoreHeavy(this)" class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 p-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-lg">local_car_wash</i></button>
@@ -108,9 +108,9 @@ headerAdmin($data); ?>
                                             </div>
                                         </div>
                                         <div class="d-flex fs-6 align-items-center  text-sm font-weight-bold">
-                                            <span id="exis-cj" class="text-success"> <?= number_format($details['CAJA'], 2) ?></span>
+                                            <span id="exis-cj" > <?= number_format($details['CAJA'], 2) ?></span>
                                             |
-                                            <span id="exis-und" class="text-success"> <?= number_format($details['UND_KG'], 2) ?> </span>
+                                            <span id="exis-und" > <?= number_format($details['UND_KG'], 2) ?> </span>
                                             |
                                             <span id="exis-pesado" class="text-warning"> <?= number_format($details['PESADO'], 2) ?></span>
                                         </div>
@@ -158,6 +158,7 @@ headerAdmin($data); ?>
                                                     <input type="hidden" value="0" id="valor-und">
                                                     <input type="hidden" value="<?= $details['DCL_CERRADO'] ?>" id="dcg-pesadas">
                                                     <input type="hidden" value="<?= $data['page_ind'] ?>" id="indicadorType">
+                                                    <input type="hidden" value="<?= $details['TIPO'] ?>" id="tdoc">
                                                     <div class="col-6">
                                                         <div class="input-group input-group-static mb-1 ">
                                                             <label>Inicio</label>

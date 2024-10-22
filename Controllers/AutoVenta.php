@@ -289,9 +289,12 @@ class AutoVenta extends Controllers
 
 				$validate = $this->model->validateDocument($numero, $client);
 
+
 				if ($validate) {
 
-					$update = $this->model->callAutoVenta($numero, $client, $vnd, $scs);
+					$update = $this->model->updateClose($numero, $client, $scs,'5');
+
+					$call = $this->model->callAutoVenta($numero, $client, $vnd, $scs);
 
 					$arrResponse = array('status' => true, 'msg' => 'Cerrado correctamente.');
 
@@ -776,7 +779,7 @@ class AutoVenta extends Controllers
 				$printer->text("Telefono: " . $arrData[0]['EMP_TELEFONO1'] . "\n", "C");
 				$printer->text("Email: " . $arrData[0]['EMP_EMAIL'] . "\n", "C");
 				$printer->text("Numero Carga: " . $arrData[0]['PDA_NUMERO'] . "\n", "C");
-				$printer->text("Cliente: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
+				$printer->text("Vendedor: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
 				$printer->text("Fecha: " . $arrData[0]['PDA_FECHA'] . "\n", "C");
 				$printer->text("_______________________________________________" . "\n", "C");
 
@@ -939,7 +942,7 @@ class AutoVenta extends Controllers
 				$printer->setJustification(Printer::JUSTIFY_LEFT);
 				$printer->text("Telefono: " . $arrData[0]['EMP_TELEFONO1'] . "\n", "C");
 				$printer->text("Email: " . $arrData[0]['EMP_EMAIL'] . "\n", "C");
-				$printer->text("Cliente: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
+				$printer->text("Vendedor: " . $arrData[0]['CLT_NOMBRE'] . "\n", "C");
 				$printer->text("Fecha: " . $arrData[0]['PDA_FECHA'] . "\n", "C");
 				$printer->text("Operador: " . $arrData[0]['OPE_NOMBRE'] . "\n", "C");
 				$printer->text("_______________________________________________" . "\n", "C");
