@@ -66,8 +66,6 @@ function sale(data) {
   let row = data.parentNode.parentNode;
 
 
-  console.log(row);
-
 
   Swal.fire({
     title: "Desear eliminar el registro?",
@@ -86,7 +84,7 @@ function sale(data) {
         new XMLHttpRequest() :
         new ActiveXObject('Microsoft.XMLHTTP');
 
-      var ajaxUrl = base_url + '/AutoVenta/deleteDocument?id=' + number + '&clt=' + clt + '&scs=' + scs + '&type=4';
+      var ajaxUrl = base_url + '/AutoVenta/deleteDocument?id=' + number + '&clt=' + clt + '&scs=' + scs + '&type=5';
 
       request.open("GET", ajaxUrl, true);
       request.send();

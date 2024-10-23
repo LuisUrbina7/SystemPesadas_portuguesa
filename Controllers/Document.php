@@ -648,7 +648,7 @@ class Document extends Controllers
 		try {
 
 			if (!empty($arrData)) {
-				$nombre_impresora = "smb://Cava1:123456@DESKTOP-BIBMBC6/POS";
+				$nombre_impresora = RAIZ_IMPRESORA;
 				$connector = new WindowsPrintConnector($nombre_impresora);
 				$printer = new Printer($connector);
 
@@ -739,7 +739,7 @@ class Document extends Controllers
 		try {
 
 			if (!empty($arrData)) {
-				$nombre_impresora = "smb://Cava1:123456@DESKTOP-BIBMBC6/POS";
+				$nombre_impresora = RAIZ_IMPRESORA;
 				$connector = new WindowsPrintConnector($nombre_impresora);
 				$printer = new Printer($connector);
 
@@ -816,7 +816,7 @@ class Document extends Controllers
 		try {
 
 			if (!empty($arrData)) {
-				$nombre_impresora = "smb://Cava1:123456@DESKTOP-BIBMBC6/POS";
+				$nombre_impresora = RAIZ_IMPRESORA;
 				$connector = new WindowsPrintConnector($nombre_impresora);
 				$printer = new Printer($connector);
 

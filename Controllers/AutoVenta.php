@@ -464,7 +464,7 @@ class AutoVenta extends Controllers
 					die();
 				}
 
-				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, '2', $_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, '1', $_SESSION['userData']['OPE_AMC_PESADA'],'5');
 
 				echo json_encode($insert, JSON_UNESCAPED_UNICODE);
 
@@ -529,7 +529,7 @@ class AutoVenta extends Controllers
 
 
 
-				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '5', $_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '1', $_SESSION['userData']['OPE_AMC_PESADA'],'5');
 
 
 

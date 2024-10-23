@@ -85,6 +85,7 @@ class VentasModel extends Mysql
 
 
 
+  
         $select = $this->select_all($details);
 
         return $select;
@@ -666,11 +667,12 @@ class VentasModel extends Mysql
     }
 
 
-    public function insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, $type, $amc)
+    public function insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data, $type, $amc,$condition)
     {
 
-        $procedure = "CALL `IMPORT_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd','$clt', '$tdtOrigen', '$NumberOrigen', '$data','$type' );";
 
+        $procedure = "CALL `IMPORT_PESADAS`( '$numero', '$tipodoc', '$scs','$vnd','$clt', '$tdtOrigen', '$NumberOrigen', '$data','$type','$condition' );";
+       
 
         $execute = $this->select($procedure);
 
@@ -701,7 +703,7 @@ class VentasModel extends Mysql
           MCL_UPP_PDT_CODIGO,
           MCL_UPP_UND_ID,
           DCL_DESCRIDOWN,     
-          IF(DCL_DESCRIDOWN = '1',
+          IF(DCL_DESCRIDOWN = '1' AND DCL_ACTIVO = 0,
           IF(PDT_LICLTSCAJA >=1 AND UGR_UND_ID IN ('UND'), FLOOR(SUM(UGR_EX1/PDT_LICLTSCAJA)), 0.00 ),
 
                     IF(
@@ -716,10 +718,10 @@ class VentasModel extends Mysql
                         )
             )  AS CAJA,
       ROUND(IFNULL(CASE  
-            WHEN PDT_LICLTSCAJA =0 AND MCL_UPP_UND_ID = 'UND' THEN SUM(IF(DCL_DESCRIDOWN = '1',UGR_EX$userAmc, MCL_CANTIDAD))
-            WHEN PDT_LICLTSCAJA >= 0 AND MCL_UPP_UND_ID = 'KG' THEN SUM(IF(DCL_DESCRIDOWN = '1',UGR_EX$userAmc, MCL_CANTIDAD))
+            WHEN PDT_LICLTSCAJA =0 AND MCL_UPP_UND_ID = 'UND' THEN SUM(IF(DCL_DESCRIDOWN = '1' AND DCL_ACTIVO = 0 ,UGR_EX$userAmc, MCL_CANTIDAD))
+            WHEN PDT_LICLTSCAJA >= 0 AND MCL_UPP_UND_ID = 'KG' THEN SUM(IF(DCL_DESCRIDOWN = '1' AND DCL_ACTIVO = 0,UGR_EX$userAmc, MCL_CANTIDAD))
             WHEN PDT_LICLTSCAJA >= 1 AND MCL_UPP_UND_ID = 'UND' THEN 
-            (SUM(IF(DCL_DESCRIDOWN = '1',UGR_EX$userAmc, MCL_CANTIDAD)/PDT_LICLTSCAJA) - FLOOR(SUM(IF(DCL_DESCRIDOWN = '1',UGR_EX$userAmc, MCL_CANTIDAD)/PDT_LICLTSCAJA)))*PDT_LICLTSCAJA
+            (SUM(IF(DCL_DESCRIDOWN = '1' AND DCL_ACTIVO = 0 ,UGR_EX$userAmc, MCL_CANTIDAD)/PDT_LICLTSCAJA) - FLOOR(SUM(IF(DCL_DESCRIDOWN = '1' AND DCL_ACTIVO = 0,UGR_EX$userAmc, MCL_CANTIDAD)/PDT_LICLTSCAJA)))*PDT_LICLTSCAJA
         END,0),2) AS UND_KG,
       PDT_LICLTSCAJA,
       DCL_ACTIVO AS DCL_PDA_CONTEO,
@@ -757,6 +759,7 @@ class VentasModel extends Mysql
              GROUP BY MCL_UPP_PDT_CODIGO; ";
 
 
+   
         $execute = $this->select_all($query);
 
         return $execute;
@@ -787,7 +790,7 @@ class VentasModel extends Mysql
 
         $call = "CALL UPDATE_PESADAS('$clt', '$numero', '$scs','$type')";
 
-
+    
         $execute = $this->select($call);
         return $execute;
     }

@@ -6,7 +6,7 @@ date_default_timezone_set('America/Caracas');
 
 //Datos de conexión a Base de Datos
 const DB_HOST = "localhost:3306";
-const DB_NAME = "feriapollo";
+const DB_NAME = "adn";
 const DB_USER = "sistemas";
 const DB_PASSWORD = 'adn';
 const DB_CHARSET = "utf8";

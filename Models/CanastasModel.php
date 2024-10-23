@@ -40,7 +40,7 @@ class CanastasModel extends Mysql
 
 	public function update_canasta(string $codigo, string $descripcion, float $equivalencia, int $activo){
 
-        $canasta = "UPDATE adn.adn_canasta_tipo SET CTA_DESCRIPCION = ?, CTA_EQUIVALENCIA = ?, CTA_ACTIVO = ? WHERE CTA_CODIGO = '$codigo';";
+        $canasta = "UPDATE adn_canasta_tipo SET CTA_DESCRIPCION = ?, CTA_EQUIVALENCIA = ?, CTA_ACTIVO = ? WHERE CTA_CODIGO = '$codigo';";
 
 		$response = $this->update($canasta, [$descripcion, $equivalencia, $activo]);
 

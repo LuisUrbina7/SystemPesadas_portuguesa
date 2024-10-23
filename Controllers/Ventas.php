@@ -500,7 +500,7 @@ class Ventas extends Controllers
 					die();
 				}
 
-				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data,'2',$_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, $tdtOrigen, $NumberOrigen, $fecha, $data,'2',$_SESSION['userData']['OPE_AMC_PESADA'],'1');
 
 				echo json_encode($insert, JSON_UNESCAPED_UNICODE);
 
@@ -565,7 +565,7 @@ class Ventas extends Controllers
 					die();
 				}
 
-				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '1', $_SESSION['userData']['OPE_AMC_PESADA']);
+				$insert = $this->model->insertCallImport($numero, $tipodoc, $scs, $vnd, $clt, '', '', $fecha, $data, '1', $_SESSION['userData']['OPE_AMC_PESADA'],'1');
 
 
 				echo json_encode($insert, JSON_UNESCAPED_UNICODE);
